@@ -26,6 +26,8 @@ class HostingBuildCommand extends Command {
 
         $platform = Yaml::parseFile(getcwd() . '/.platform/.platform.app.yaml');
 
+        // Create the Lando application name.
+        $lando['name'] = strtolower(str_replace(' ', '_', $project['application_name']));
 
         // TODO: Check if config exists, cleanup.
         foreach ($project['sites'] as $site_id => $site) {
@@ -66,7 +68,7 @@ class HostingBuildCommand extends Command {
         $lando_config = Yaml::dump($lando, 2);
 
         file_put_contents(getcwd() . '/.platform.app.yaml', $platform_config);
-        file_put_contents(getcwd() . '/.lando.yaml', $lando_config);
+        file_put_contents(getcwd() . '/.lando.local.yml', $lando_config);
 
         return Command::SUCCESS;
     }
