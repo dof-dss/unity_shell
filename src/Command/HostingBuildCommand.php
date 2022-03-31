@@ -40,9 +40,15 @@ class HostingBuildCommand extends Command {
             if (!empty($site['solr'])) {
                 $platform['relationships'][$site_id . '_solr'] = 'solr:' . $site['solr'];
             }
+
+            // Create cron entries.
+            if (!empty($site['cron_spec']) && !empty($site['cron_cmd'])) {
+                $platform['cron'][$site_id]['spec'] = $site['cron_spec'];
+                $platform['cron'][$site_id]['cmd'] = $site['cron_cmd'];
+            }
         }
 
-        $platform_app = Yaml::dump($platform);
+        $platform_app = Yaml::dump($platform, 2);
 
         file_put_contents(getcwd() . '/.platform.app.yaml', $platform_app);
 
