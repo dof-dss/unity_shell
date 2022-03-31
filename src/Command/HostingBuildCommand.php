@@ -5,6 +5,7 @@ namespace App\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Yaml\Yaml;
 
 #[AsCommand(
     name: 'hosting:build',
@@ -19,6 +20,23 @@ class HostingBuildCommand extends Command {
     protected function execute(InputInterface $input, OutputInterface $output): int {
 
         $output->writeln(['Building host environment']);
+
+        // TODO: Check existence of project dir and file.
+        $project = Yaml::parseFile(getcwd() . '/project/project.yml');
+
+        $platform = Yaml::parseFile(getcwd() . '/.platform/.platform.app.yaml');
+
+        // TODO: Check if config exists, cleanup.
+        foreach ($project['sites'] as $site_id => $site) {
+
+            $output->writeln('Building: ' . $site_id);
+            $platform['relationships'][$site_id] = 'db:' . $site['database'];
+        }
+
+        $platform_app = Yaml::dump($platform);
+
+        file_put_contents(getcwd() . '/.platform.app.yaml', $platform_app);
+
         return Command::SUCCESS;
     }
 }
