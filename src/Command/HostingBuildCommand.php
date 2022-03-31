@@ -26,8 +26,9 @@ class HostingBuildCommand extends Command {
 
         $platform = Yaml::parseFile(getcwd() . '/.platform/.platform.app.yaml');
 
-        // Create the Lando application name.
-        $lando['name'] = strtolower(str_replace(' ', '_', $project['application_name']));
+        // Create the Platform and Lando application name.
+        $platform['name'] = $this->createApplicationID($project['application_name']);
+        $lando['name'] = $platform['name'];
 
         // TODO: Check if config exists, cleanup.
         foreach ($project['sites'] as $site_id => $site) {
@@ -36,6 +37,7 @@ class HostingBuildCommand extends Command {
 
             // Create Lando proxy.
             $lando['proxy']['appserver'][] = $site_id . '.lndo.site';
+            $platform['relationships'][$site_id] = 'db:' . $site['database'];
 
             // Create database relationship.
             if (!empty($site['database'])) {
@@ -72,4 +74,16 @@ class HostingBuildCommand extends Command {
 
         return Command::SUCCESS;
     }
+
+    /**
+     * Create a machine safe application id.
+     *
+     * @param string $name
+     *   Name of the project to create an ID for.
+     * @return string
+     */
+   private function createApplicationID(string $name): string {
+       return strtolower(str_replace(' ', '_', $name));
+   }
+
 }
