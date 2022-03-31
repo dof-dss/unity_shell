@@ -30,7 +30,16 @@ class HostingBuildCommand extends Command {
         foreach ($project['sites'] as $site_id => $site) {
 
             $output->writeln('Building: ' . $site_id);
-            $platform['relationships'][$site_id] = 'db:' . $site['database'];
+
+            // Create database relationship.
+            if (!empty($site['database'])) {
+                $platform['relationships'][$site_id] = 'db:' . $site['database'];
+            }
+
+            // Create solr relationship.
+            if (!empty($site['solr'])) {
+                $platform['relationships'][$site_id . '_solr'] = 'solr:' . $site['solr'];
+            }
         }
 
         $platform_app = Yaml::dump($platform);
