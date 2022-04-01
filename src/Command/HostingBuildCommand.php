@@ -64,13 +64,20 @@ class HostingBuildCommand extends Command {
                 $platform['cron'][$site_id]['cmd'] = $site['cron_cmd'];
             }
 
+            // Create deployment list.
+            if ($site['deploy'] === TRUE) {
+                $deployed_sites[] = $site_id;
+            }
         }
+
+        // Update platform post deploy hook with list of deployed sites.
+        $platform['hooks']['post_deploy'] = str_replace('<deployed_sites_placeholder>', implode(' ', $deployed_sites), $platform['hooks']['post_deploy']);
 
         $platform_config = Yaml::dump($platform, 2);
         $lando_config = Yaml::dump($lando, 2);
 
         file_put_contents(getcwd() . '/.platform.app.yaml', $platform_config);
-        file_put_contents(getcwd() . '/.lando.local.yml', $lando_config);
+        file_put_contents(getcwd() . '/.lando.yml', $lando_config);
 
         return Command::SUCCESS;
     }
