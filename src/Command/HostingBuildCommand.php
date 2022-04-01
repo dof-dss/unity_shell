@@ -5,6 +5,8 @@ namespace App\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 
 #[AsCommand(
@@ -18,6 +20,9 @@ class HostingBuildCommand extends Command {
     protected static $defaultName = 'hosting:build';
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
+        $filesystem = new Filesystem();
+
+        // TODO: Check we are running in the root of a Unity repo.
 
         $output->writeln(['Building host environment']);
 
@@ -29,6 +34,8 @@ class HostingBuildCommand extends Command {
         // Create the Platform and Lando application name.
         $platform['name'] = $this->createApplicationID($project['application_name']);
         $lando['name'] = $platform['name'];
+
+//        $filesystem->chmod('web/sites', 0777, 0000, true);
 
         // TODO: Check if config exists, cleanup.
         foreach ($project['sites'] as $site_id => $site) {
@@ -67,6 +74,14 @@ class HostingBuildCommand extends Command {
             // Create deployment list.
             if ($site['deploy'] === TRUE) {
                 $deployed_sites[] = $site_id;
+            }
+
+            // Create symlinks to sites
+            // TODO: If directory exists, check type and replace with symlink if needed.
+            try {
+                $filesystem->symlink('project/sites/' . $site_id, 'web/sites/' . $site_id);
+            } catch (IOExceptionInterface $exception) {
+                $output->writeln("An error occurred while linking $site_id site directory: " . $exception->getMessage());
             }
         }
 
