@@ -22,9 +22,18 @@ class HostingBuildCommand extends Command {
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $filesystem = new Filesystem();
 
+        // TODO: Spin most of this code out into separate functions or services
+        // and remove all these todo's
+
         // TODO: Check we are running in the root of a Unity repo.
+        // TODO: Determine the execution path and replace getcwd() calls with something better.
 
         $output->writeln(['Building host environment']);
+
+        // Check for an .env file and copy example if missing
+        if (!$filesystem->exists(getcwd() .'/.env')) {
+            $filesystem->copy(getcwd() . '/.env.sample', getcwd() . '/.env');
+        }
 
         // TODO: Check existence of project dir and file.
         $project = Yaml::parseFile(getcwd() . '/project/project.yml');
