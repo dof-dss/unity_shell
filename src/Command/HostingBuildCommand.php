@@ -5,6 +5,7 @@ namespace App\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
@@ -29,11 +30,6 @@ class HostingBuildCommand extends Command {
         // TODO: Determine the execution path and replace getcwd() calls with something better.
 
         $output->writeln(['Building host environment']);
-
-        // Check for an .env file and copy example if missing
-        if (!$filesystem->exists(getcwd() .'/.env')) {
-            $filesystem->copy(getcwd() . '/.env.sample', getcwd() . '/.env');
-        }
 
         // TODO: Check existence of project dir and file.
         $project = Yaml::parseFile(getcwd() . '/project/project.yml');
@@ -103,6 +99,24 @@ class HostingBuildCommand extends Command {
         file_put_contents(getcwd() . '/.platform.app.yaml', $platform_config);
         file_put_contents(getcwd() . '/.lando.yml', $lando_config);
 
+        // Check for an .env file and copy example if missing
+        if (!$filesystem->exists(getcwd() .'/.env')) {
+            $filesystem->copy(getcwd() . '/.env.sample', getcwd() . '/.env');
+        }
+
+
+        $env_data = parse_ini_file(getcwd() .'/.env');
+
+        if (empty($env_data['HASH_SALT'])) {
+            $question = new ConfirmationQuestion('Hash Salt was not found in the .env file. Would you like to add one? (Y/n)', true);
+            $helper = $this->getHelper('question');
+
+            if ($helper->ask($input, $output, $question)) {
+                $env_data['HASH_SALT'] = str_replace(['+', '/', '=',], ['-', '_', '',], base64_encode(random_bytes(55)));
+                $this->writeIniFile(getcwd() .'/.env', $env_data);
+            }
+        }
+
         return Command::SUCCESS;
     }
 
@@ -116,5 +130,26 @@ class HostingBuildCommand extends Command {
    private function createApplicationID(string $name): string {
        return strtolower(str_replace(' ', '_', $name));
    }
+
+    /**
+     * @param $file
+     *  File path to write the ini data to.
+     * @param $array
+     *  Array of data to be written
+     * @param $i
+     * @return false|int|string
+     */
+   private function writeIniFile(string $file, array $array, $i = 0){
+        $str="";
+        foreach ($array as $k => $v){
+            if (is_array($v)) {
+                $str.=str_repeat(" ",$i*2)."[$k]".PHP_EOL;
+                $str.= $this->writeIniFile("",$v, $i+1);
+            } else {
+                $str.=str_repeat(" ",$i*2)."$k = $v".PHP_EOL;
+            }
+        }
+       return file_put_contents($file, $str);
+    }
 
 }
