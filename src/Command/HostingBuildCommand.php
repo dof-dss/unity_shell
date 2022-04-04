@@ -69,7 +69,7 @@ class HostingBuildCommand extends Command {
                     'portforward' => true,
                     'core' => 'default',
                     'config' => [
-                        'dir' => 'lando/config/solr/7.x/default'
+                        'dir' => '.lando/config/solr/7.x/default'
                     ],
                 ];
             }
