@@ -52,7 +52,7 @@ class HostingBuildCommand extends Command {
             $output->writeln('Building: ' . $site_id);
 
             // Create Lando proxy.
-            $lando['proxy']['appserver'][] = $site_id . '.lndo.site';
+            $lando['proxy']['appserver'][] = $site['url'] . '.lndo.site';
             $platform['relationships'][$site_id] = 'db:' . $site['database'];
 
             // Create database relationship.
@@ -88,7 +88,7 @@ class HostingBuildCommand extends Command {
             // Create symlinks to sites
             // TODO: If directory exists, check type and replace with symlink if needed.
             try {
-                $filesystem->symlink('project/sites/' . $site_id, 'web/sites/' . $site_id);
+                $filesystem->symlink('/app/project/sites/' . $site_id, 'web/sites/' . $site_id);
             } catch (IOExceptionInterface $exception) {
                 $output->writeln("An error occurred while linking $site_id site directory: " . $exception->getMessage());
             }
