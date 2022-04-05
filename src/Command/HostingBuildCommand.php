@@ -8,6 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Yaml\Tag\TaggedValue;
 use Symfony\Component\Yaml\Yaml;
 
 #[AsCommand(
@@ -128,9 +129,11 @@ class HostingBuildCommand extends Command {
             ];
 
             if (!empty($site['solr'])) {
+                $solr_conf_dir = new TaggedValue('archive', 'solr_config/');
                 $services['solr']['configuration']['cores'][$site_id . '_index'] = [
-                    'conf_dir' => '!archive "solr_config/"',
+                    'conf_dir' => $solr_conf_dir,
                 ];
+
                 $services['solr']['configuration']['endpoints'][$site_id] = [
                     'core' => $site_id . '_index',
                 ];
