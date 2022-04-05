@@ -81,12 +81,25 @@ class HostingBuildCommand extends Command {
                 $deployed_sites[] = $site_id;
             }
 
-            // Create symlinks to sites
-            // TODO: If directory exists, check type and replace with symlink if needed.
+            // If a site folder doesn't exist under project/sites, create it and provide a settings file.
+            if (!$filesystem->exists(getcwd() . '/project/sites/' . $site_id)) {
+                $output->writeln('Creating a site directory for ' . $site_id . ' under project/sites/');
+                $filesystem->mkdir(getcwd() .  '/project/sites/' . $site_id);
+                $filesystem->copy(getcwd() . '/.lando/config/multisite.settings.php', getcwd() . '/project/sites/' . $site_id . '/settings.php' );
+            }
+
+            // Enable our multisite entry by linking from the sites dir to the project dir.
             try {
                 $filesystem->symlink('/app/project/sites/' . $site_id, 'web/sites/' . $site_id);
             } catch (IOExceptionInterface $exception) {
                 $output->writeln("An error occurred while linking $site_id site directory: " . $exception->getMessage());
+            }
+
+            // If a site config doesn't exist under project/config, create it.
+            if (!$filesystem->exists(getcwd() . '/project/config/' . $site_id)) {
+                $output->writeln('Creating config directory for ' . $site_id . ' under project/config/');
+                $filesystem->mkdir(getcwd() .  '/project/config/' . $site_id);
+                $filesystem->touch(getcwd() .  '/project/config/' . $site_id . '/.gitkeep');
             }
         }
 
