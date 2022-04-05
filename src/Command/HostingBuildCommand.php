@@ -34,7 +34,7 @@ class HostingBuildCommand extends Command {
         // TODO: Check existence of project dir and file.
         $project = Yaml::parseFile(getcwd() . '/project/project.yml');
 
-        $platform = Yaml::parseFile(getcwd() . '/.platform/.platform.app.yaml');
+        $platform = Yaml::parseFile(getcwd() . '/.platform/.platform.app.template.yaml');
 
         // Create the Platform and Lando application name.
         $platform['name'] = $this->createApplicationID($project['application_name']);
