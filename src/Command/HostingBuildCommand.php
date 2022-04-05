@@ -33,7 +33,10 @@ class HostingBuildCommand extends Command {
 
         // TODO: Check existence of project dir and file.
         $project = Yaml::parseFile(getcwd() . '/project/project.yml');
+
+        // Platform SH specific configuration.
         $platform = Yaml::parseFile(getcwd() . '/hosting/platformsh/.platform.app.template.yaml');
+        $services = Yaml::parseFile(getcwd() . '/hosting/platformsh/.services.template.yaml', Yaml::PARSE_CUSTOM_TAGS);
 
         // Create the Platform and Lando application name.
         $platform['name'] = $this->createApplicationID($project['application_name']);
@@ -114,6 +117,25 @@ class HostingBuildCommand extends Command {
                 'type' => 'redirect',
                 'to' => 'https://www.' . $site['url'] . '/',
             ];
+
+            // Create Platform SH services.
+            $services['db']['configuration']['schemas'][] = $site_id;
+            $services['db']['configuration']['endpoints'][$site_id] = [
+                'default_schema' => $site_id . 'db',
+                'privileges' => [
+                    $site_id . 'db' => 'admin'
+                ],
+            ];
+
+            if (!empty($site['solr'])) {
+                $services['solr']['configuration']['cores'][$site_id . '_index'] = [
+                    'conf_dir' => '!archive "solr_config/"',
+                ];
+                $services['solr']['configuration']['endpoints'][$site_id] = [
+                    'core' => $site_id . '_index',
+                ];
+            }
+
         }
 
         // Update platform post deploy hook with list of deployed sites.
@@ -121,11 +143,13 @@ class HostingBuildCommand extends Command {
 
         $platform_config = Yaml::dump($platform, 2);
         $platform_routes_config = Yaml::dump($platform_routes, 2);
+        $platform_services_config = Yaml::dump($services, 6);
         $lando_config = Yaml::dump($lando, 2);
 
         file_put_contents(getcwd() . '/.platform.app.yaml', $platform_config);
         file_put_contents(getcwd() . '/.lando.yml', $lando_config);
         file_put_contents(getcwd() . '/.platform/routes.yaml', $platform_routes_config);
+        file_put_contents(getcwd() . '/.platform/services.yaml', $platform_services_config);
 
         // Check for an .env file and copy example if missing
         if (!$filesystem->exists(getcwd() .'/.env')) {
