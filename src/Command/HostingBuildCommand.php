@@ -33,8 +33,7 @@ class HostingBuildCommand extends Command {
 
         // TODO: Check existence of project dir and file.
         $project = Yaml::parseFile(getcwd() . '/project/project.yml');
-
-        $platform = Yaml::parseFile(getcwd() . '/.platform/.platform.app.template.yaml');
+        $platform = Yaml::parseFile(getcwd() . '/hosting/platformsh/.platform.app.template.yaml');
 
         // Create the Platform and Lando application name.
         $platform['name'] = $this->createApplicationID($project['application_name']);
@@ -101,16 +100,32 @@ class HostingBuildCommand extends Command {
                 $filesystem->mkdir(getcwd() .  '/project/config/' . $site_id);
                 $filesystem->touch(getcwd() .  '/project/config/' . $site_id . '/.gitkeep');
             }
+
+            // Create Platform SH route.
+            $platform_routes['https://www.' . $site['url'] . '/'] = [
+                'type' => 'upstream',
+                'upstream' => $platform['name'] . ':http',
+                'cache' => [
+                    'enabled' => 'false'
+                ],
+            ];
+
+            $platform_routes['https://' . $site['url'] . '/'] = [
+                'type' => 'redirect',
+                'to' => 'https://www.' . $site['url'] . '/',
+            ];
         }
 
         // Update platform post deploy hook with list of deployed sites.
         $platform['hooks']['post_deploy'] = str_replace('<deployed_sites_placeholder>', implode(' ', $deployed_sites), $platform['hooks']['post_deploy']);
 
         $platform_config = Yaml::dump($platform, 2);
+        $platform_routes_config = Yaml::dump($platform_routes, 2);
         $lando_config = Yaml::dump($lando, 2);
 
         file_put_contents(getcwd() . '/.platform.app.yaml', $platform_config);
         file_put_contents(getcwd() . '/.lando.yml', $lando_config);
+        file_put_contents(getcwd() . '/.platform/routes.yaml', $platform_routes_config);
 
         // Check for an .env file and copy example if missing
         if (!$filesystem->exists(getcwd() .'/.env')) {
