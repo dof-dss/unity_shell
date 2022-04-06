@@ -28,7 +28,9 @@ class HostingBuildCommand extends Command {
 
         // TODO: Spin most of this code out into separate functions or services
         // and remove all these todo's
-        // -- Remove config if an entry is removed from project.yml
+        // - Remove all config if an entry is removed from project.yml.
+        // - Better error handling.
+        // - Download Platform databases.
 
         // TODO: Check we are running in the root of a Unity repo.
         // TODO: Determine the execution path and replace getcwd() calls with something better.
@@ -49,7 +51,7 @@ class HostingBuildCommand extends Command {
         // TODO: Check if config exists, cleanup.
         foreach ($project['sites'] as $site_id => $site) {
 
-            $io->section('Creating Lando and Platform SH configuration for '  . $site_id);
+            $io->section('Creating Lando and Platform SH configuration for: '  . $site_id);
 
             // Create Lando proxy.
             $io->text('Lando: proxy entry');
@@ -234,6 +236,14 @@ class HostingBuildCommand extends Command {
                 $this->writeIniFile(getcwd() .'/.env', $env_data);
             }
         }
+
+        $io->section("Finished!");
+        $io->text("To build your local unity sites:");
+        $io->listing([
+            "Run 'lando start'",
+            "Import platform databases using 'lando db-import <database name> <dump file>'",
+            "Download the site files using 'platform mount:download",
+        ]);
 
         return Command::SUCCESS;
     }
