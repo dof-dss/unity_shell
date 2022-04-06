@@ -149,10 +149,10 @@ class HostingBuildCommand extends Command {
         $platform_services_config = Yaml::dump($services, 6);
         $lando_config = Yaml::dump($lando, 6);
 
-        file_put_contents(getcwd() . '/.platform.app.yaml', $platform_config);
-        file_put_contents(getcwd() . '/.lando.yml', $lando_config);
-        file_put_contents(getcwd() . '/.platform/routes.yaml', $platform_routes_config);
-        file_put_contents(getcwd() . '/.platform/services.yaml', $platform_services_config);
+        $filesystem->dumpFile(getcwd() . '/.platform.app.yaml', $platform_config);
+        $filesystem->dumpFile(getcwd() . '/.lando.yml', $lando_config);
+        $filesystem->dumpFile(getcwd() . '/.platform/routes.yaml', $platform_routes_config);
+        $filesystem->dumpFile(getcwd() . '/.platform/services.yaml', $platform_services_config);
 
         // Check for an .env file and copy example if missing
         if (!$filesystem->exists(getcwd() .'/.env')) {
