@@ -37,7 +37,7 @@ class HostingBuildCommand extends Command {
 
         // Platform SH specific configuration.
         $platform = Yaml::parseFile(getcwd() . '/.hosting/platformsh/.platform.app.template.yaml');
-        $services = Yaml::parseFile(getcwd() . '/.hosting/platformsh/.services.template.yaml', Yaml::PARSE_CUSTOM_TAGS);
+        $services = Yaml::parseFile(getcwd() . '/.hosting/platformsh/.services.template.yaml');
 
         // Create the Platform and Lando application name.
         $platform['name'] = $this->createApplicationID($project['application_name']);
@@ -144,10 +144,10 @@ class HostingBuildCommand extends Command {
         // Update platform post deploy hook with list of deployed sites.
         $platform['hooks']['post_deploy'] = str_replace('<deployed_sites_placeholder>', implode(' ', $deployed_sites), $platform['hooks']['post_deploy']);
 
-        $platform_config = Yaml::dump($platform, 2);
-        $platform_routes_config = Yaml::dump($platform_routes, 2);
+        $platform_config = Yaml::dump($platform, 6);
+        $platform_routes_config = Yaml::dump($platform_routes, 6);
         $platform_services_config = Yaml::dump($services, 6);
-        $lando_config = Yaml::dump($lando, 2);
+        $lando_config = Yaml::dump($lando, 6);
 
         file_put_contents(getcwd() . '/.platform.app.yaml', $platform_config);
         file_put_contents(getcwd() . '/.lando.yml', $lando_config);
