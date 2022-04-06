@@ -137,8 +137,8 @@ class HostingBuildCommand extends Command {
 
             // Enable our multisite entry by linking from the sites dir to the project dir.
             try {
-                $io->text('Linking sites directory');
                 $filesystem->symlink('/app/project/sites/' . $site_id, 'web/sites/' . $site_id);
+                $io->text('Linking sites directory');
             } catch (IOExceptionInterface $exception) {
                 $io->error("An error occurred while linking $site_id site directory: " . $exception->getMessage());
             }
@@ -169,20 +169,58 @@ class HostingBuildCommand extends Command {
         $platform_services_config = Yaml::dump($services, 6);
         $lando_config = Yaml::dump($lando, 6);
 
-        $filesystem->dumpFile(getcwd() . '/.platform.app.yaml', $platform_config);
-        $filesystem->dumpFile(getcwd() . '/.lando.yml', $lando_config);
-        $filesystem->dumpFile(getcwd() . '/.platform/routes.yaml', $platform_routes_config);
-        $filesystem->dumpFile(getcwd() . '/.platform/services.yaml', $platform_services_config);
+        // TODO: process all these as an array or separate function.
+        try {
+            $filesystem->dumpFile(getcwd() . '/.platform.app.yaml', $platform_config);
+            $io->success('Created Platform app file');
+        }
+        catch (IOExceptionInterface $exception) {
+            $io->success('Unable to create Platform app file, error: ' . $exception->getMessage());
+        }
+
+        try {
+            $filesystem->dumpFile(getcwd() . '/.lando.yml', $lando_config);
+            $io->success('Created Lando file');
+        }
+        catch (IOExceptionInterface $exception) {
+            $io->success('Unable to create Lando file, error: ' . $exception->getMessage());
+        }
+
+        try {
+            $filesystem->dumpFile(getcwd() . '/.platform/routes.yaml', $platform_routes_config);
+            $io->success('Created Platform routes file');
+        }
+        catch (IOExceptionInterface $exception) {
+            $io->success('Unable to create Platform routes file, error: ' . $exception->getMessage());
+        }
+
+        try {
+            $filesystem->dumpFile(getcwd() . '/.platform/services.yaml', $platform_services_config);
+            $io->success('Created Platform services file');
+        }
+        catch (IOExceptionInterface $exception) {
+            $io->success('Unable to create Platform services file, error: ' . $exception->getMessage());
+        }
+
+        // Copy Platform Solr server configuration.
+        try {
+            $filesystem->mirror(getcwd() . '/.hosting/platformsh/solr_config', getcwd() . '/.platform/solr_config');
+            $io->success('Successfully copied Solr server configuration');
+        }
+        catch (IOExceptionInterface $exception) {
+            $io->success('Unable to copy Solr server configuration, error: ' . $exception->getMessage());
+        }
 
         // Check for an .env file and copy example if missing
         if (!$filesystem->exists(getcwd() .'/.env')) {
-            $io->text('Creating local .env file');
-            $filesystem->copy(getcwd() . '/.env.sample', getcwd() . '/.env');
+            try {
+                $filesystem->copy(getcwd() . '/.env.sample', getcwd() . '/.env');
+                $io->success('Created local .env file');
+            }
+            catch (IOExceptionInterface $exception) {
+                $io->success('Unable to create local .env file, error: ' . $exception->getMessage());
+            }
         }
-
-        // Copy Platform Solr configuration.
-        $io->text('Platform: solr config');
-        $filesystem->mirror(getcwd() . '/.hosting/platformsh/solr_config', getcwd() . '/.platform/solr_config');
 
         $env_data = parse_ini_file(getcwd() .'/.env');
 
