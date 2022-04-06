@@ -159,7 +159,9 @@ class HostingBuildCommand extends Command {
             $filesystem->copy(getcwd() . '/.env.sample', getcwd() . '/.env');
         }
 
-
+        // Copy Platform Solr configuration.
+        $filesystem->mirror(getcwd() . '/hosting/platformsh/solr_config', getcwd() . '/.platform/solr_config');
+        
         $env_data = parse_ini_file(getcwd() .'/.env');
 
         if (empty($env_data['HASH_SALT'])) {
