@@ -103,6 +103,13 @@ class HostingBuildCommand extends Command {
                 $output->writeln('Creating config directory for ' . $site_id . ' under project/config/');
                 $filesystem->mkdir(getcwd() .  '/project/config/' . $site_id);
                 $filesystem->touch(getcwd() .  '/project/config/' . $site_id . '/.gitkeep');
+
+                // Create the default config directories if they don't already exist.
+                foreach (['config', 'hosted', 'local', 'production'] as $directory) {
+                    if (!$filesystem->exists(getcwd() . '/project/config/' . $site_id . '/config/' . $directory)) {
+                        $filesystem->mkdir(getcwd() . '/project/config/' . $site_id . '/config/' . $directory);
+                    }
+                }
             }
 
             // Create Platform SH route.
