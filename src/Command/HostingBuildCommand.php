@@ -36,8 +36,8 @@ class HostingBuildCommand extends Command {
         $project = Yaml::parseFile(getcwd() . '/project/project.yml');
 
         // Platform SH specific configuration.
-        $platform = Yaml::parseFile(getcwd() . '/hosting/platformsh/.platform.app.template.yaml');
-        $services = Yaml::parseFile(getcwd() . '/hosting/platformsh/.services.template.yaml', Yaml::PARSE_CUSTOM_TAGS);
+        $platform = Yaml::parseFile(getcwd() . '/.hosting/platformsh/.platform.app.template.yaml');
+        $services = Yaml::parseFile(getcwd() . '/.hosting/platformsh/.services.template.yaml', Yaml::PARSE_CUSTOM_TAGS);
 
         // Create the Platform and Lando application name.
         $platform['name'] = $this->createApplicationID($project['application_name']);
@@ -160,8 +160,8 @@ class HostingBuildCommand extends Command {
         }
 
         // Copy Platform Solr configuration.
-        $filesystem->mirror(getcwd() . '/hosting/platformsh/solr_config', getcwd() . '/.platform/solr_config');
-        
+        $filesystem->mirror(getcwd() . '/.hosting/platformsh/solr_config', getcwd() . '/.platform/solr_config');
+
         $env_data = parse_ini_file(getcwd() .'/.env');
 
         if (empty($env_data['HASH_SALT'])) {
