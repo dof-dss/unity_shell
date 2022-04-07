@@ -51,18 +51,22 @@ class SiteRemoveCommand extends Command {
 
             try {
                 $filesystem->dumpFile(getcwd() . '/project/project.yml', $project_config);
+                $io->success('Successfully removed ' . $site_id . ' from the project.');
             }
             catch (IOExceptionInterface $exception) {
                 $io->error('Unable to update Project file, error: ' . $exception->getMessage());
                 return Command::FAILURE;
             }
 
-            $build_command = $this->getApplication()->find('project:build');
+            if($io->confirm('Would you like to rebuild the project?')) {
+                $build_command = $this->getApplication()->find('project:build');
 
-            $return_code = $build_command->run(new ArrayInput([]), $output);
-            $io->success('Successfully removed ' . $site_id . ' and rebuilt the project.');
-            return $return_code;
-
+                $return_code = $build_command->run(new ArrayInput([]), $output);
+                return $return_code;
+            } else {
+                $io->success('Successfully removed ' . $site_id . ' from the project.');
+                return Command::SUCCESS;
+            }
         } else {
             $io->error('Site ' . $site_id . ' not found within Projects file.');
             return Command::FAILURE;

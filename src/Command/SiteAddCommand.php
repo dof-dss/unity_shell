@@ -4,6 +4,7 @@ namespace App\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -73,7 +74,15 @@ class SiteAddCommand extends Command {
                 $io->writeln($property . ' : ' . $value);
             }
 
-            return Command::SUCCESS;
+            if($io->confirm('Would you like to rebuild the project?')) {
+                $build_command = $this->getApplication()->find('project:build');
+
+                $return_code = $build_command->run(new ArrayInput([]), $output);
+                return $return_code;
+            } else {
+                $io->success('Successfully added ' . $site_id . ' to the project.');
+                return Command::SUCCESS;
+            }
         }
         catch (IOExceptionInterface $exception) {
             $io->error('Unable to update Project file, error: ' . $exception->getMessage());
