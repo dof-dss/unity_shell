@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use Drupal\Component\Uuid\Com;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,13 +28,17 @@ class ProjectBuildCommand extends Command {
         $io = new SymfonyStyle($input, $output);
 
         // TODO: Spin most of this code out into separate functions or services
-        // and remove all these todo's
+        // and remove all these todo's.
         // - Remove all config if an entry is removed from project.yml.
-        // - Better error handling.
+        // - Replace getcwd() paths with something more succinct.
+        // - Improve error handling.
         // - Download Platform databases.
 
-        // TODO: Check we are running in the root of a Unity repo.
-        // TODO: Determine the execution path and replace getcwd() calls with something better.
+        // Check we are running in the root of a Unity repo and have a project file.
+        if (!$filesystem->exists(getcwd() . 'project/project.yml')) {
+            $io->error('Please ensure you are in the root of a Unity project and that project/project.yml exists before running this command.');
+            return Command::FAILURE;
+        }
 
         $io->title('Building host environment');
 
