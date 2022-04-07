@@ -42,7 +42,6 @@ class ProjectBuildCommand extends Command {
 
         $io->title('Building host environment');
 
-        // TODO: Check existence of project dir and file.
         $project = Yaml::parseFile(getcwd() . '/project/project.yml');
 
         // Platform SH specific configuration.
@@ -182,7 +181,7 @@ class ProjectBuildCommand extends Command {
             $io->success('Created Platform app file');
         }
         catch (IOExceptionInterface $exception) {
-            $io->success('Unable to create Platform app file, error: ' . $exception->getMessage());
+            $io->error('Unable to create Platform app file, error: ' . $exception->getMessage());
         }
 
         try {
@@ -190,7 +189,7 @@ class ProjectBuildCommand extends Command {
             $io->success('Created Lando file');
         }
         catch (IOExceptionInterface $exception) {
-            $io->success('Unable to create Lando file, error: ' . $exception->getMessage());
+            $io->error('Unable to create Lando file, error: ' . $exception->getMessage());
         }
 
         try {
@@ -198,7 +197,7 @@ class ProjectBuildCommand extends Command {
             $io->success('Created Platform routes file');
         }
         catch (IOExceptionInterface $exception) {
-            $io->success('Unable to create Platform routes file, error: ' . $exception->getMessage());
+            $io->error('Unable to create Platform routes file, error: ' . $exception->getMessage());
         }
 
         try {
@@ -206,7 +205,7 @@ class ProjectBuildCommand extends Command {
             $io->success('Created Platform services file');
         }
         catch (IOExceptionInterface $exception) {
-            $io->success('Unable to create Platform services file, error: ' . $exception->getMessage());
+            $io->error('Unable to create Platform services file, error: ' . $exception->getMessage());
         }
 
         // Copy Platform Solr server configuration.
@@ -215,7 +214,7 @@ class ProjectBuildCommand extends Command {
             $io->success('Successfully copied Solr server configuration');
         }
         catch (IOExceptionInterface $exception) {
-            $io->success('Unable to copy Solr server configuration, error: ' . $exception->getMessage());
+            $io->error('Unable to copy Solr server configuration, error: ' . $exception->getMessage());
         }
 
         // Check for an .env file and copy example if missing
@@ -225,7 +224,7 @@ class ProjectBuildCommand extends Command {
                 $io->success('Created local .env file');
             }
             catch (IOExceptionInterface $exception) {
-                $io->success('Unable to create local .env file, error: ' . $exception->getMessage());
+                $io->error('Unable to create local .env file, error: ' . $exception->getMessage());
             }
         }
 
