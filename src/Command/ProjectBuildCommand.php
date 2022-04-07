@@ -13,14 +13,14 @@ use Symfony\Component\Yaml\Tag\TaggedValue;
 use Symfony\Component\Yaml\Yaml;
 
 #[AsCommand(
-    name: 'hosting:build',
-    description: 'Builds the hosting environment for Unity sites',
+    name: 'project:build',
+    description: 'Builds Lando and Platform hosting environments for this project',
     hidden: false,
-    aliases: ['hb']
+    aliases: ['pb']
 )]
-class HostingBuildCommand extends Command {
+class ProjectBuildCommand extends Command {
     // the name of the command (the part after "bin/console")
-    protected static $defaultName = 'hosting:build';
+    protected static $defaultName = 'project:build';
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $filesystem = new Filesystem();
@@ -242,7 +242,7 @@ class HostingBuildCommand extends Command {
         $io->listing([
             "Run 'lando start'",
             "Import platform databases using 'lando db-import <database name> <dump file>'",
-            "Download the site files using 'platform mount:download",
+            "Download the site files using 'platform mount:download'",
         ]);
 
         return Command::SUCCESS;
