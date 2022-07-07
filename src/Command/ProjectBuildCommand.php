@@ -241,13 +241,21 @@ class ProjectBuildCommand extends Command {
             }
         }
 
-        $io->section("Finished!");
-        $io->text("To build your local unity sites:");
-        $io->listing([
+        // Steps to take after the project has finished building.
+        $post_build_instructions = [
             "Run 'lando start'",
             "Import platform databases using 'lando db-import <database name> <dump file>'",
             "Download the site files using 'platform mount:download'",
-        ]);
+        ];
+
+        // Check for the vendor dir and add message to instructions.
+        if (!$filesystem->exists(getcwd() .'/vendor')) {
+            $post_build_instructions[] = "Run 'lando composer install' to install the project dependencies.";
+        }
+
+        $io->section("Finished!");
+        $io->text("To build your local unity sites:");
+        $io->listing($post_build_instructions);
 
         return Command::SUCCESS;
     }
