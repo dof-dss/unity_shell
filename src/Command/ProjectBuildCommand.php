@@ -49,7 +49,7 @@ class ProjectBuildCommand extends Command {
         $services = Yaml::parseFile(getcwd() . '/.hosting/platformsh/.services.template.yaml');
 
         // Create the Platform and Lando application name.
-        $platform['name'] = $this->createApplicationID($project['application_name']);
+        $platform['name'] = $this->createApplicationID($project['project_name']);
         $lando['name'] = $platform['name'];
 
         // TODO: Check if config exists, cleanup.

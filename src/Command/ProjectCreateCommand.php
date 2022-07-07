@@ -7,7 +7,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
@@ -64,11 +63,21 @@ class ProjectCreateCommand extends Command {
 
         try {
             $filesystem->dumpFile(getcwd() . '/project/project.yml', $project_config);
-            $io->success('Updated project file');
+            $io->success('Created project file');
+
+            if($io->confirm('Would you like to add a site to the project?')) {
+                $build_command = $this->getApplication()->find('site:add');
+
+                $return_code = $build_command->run(new ArrayInput([]), $output);
+                return $return_code;
+            } else {
+                return Command::SUCCESS;
+            }
+
             return Command::SUCCESS;
         }
         catch (IOExceptionInterface $exception) {
-            $io->error('Unable to update Project file, error: ' . $exception->getMessage());
+            $io->error('Unable to create Project file, error: ' . $exception->getMessage());
             return Command::FAILURE;
         }
     }
