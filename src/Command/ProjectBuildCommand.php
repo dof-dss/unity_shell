@@ -5,7 +5,6 @@ namespace App\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -52,6 +51,11 @@ class ProjectBuildCommand extends Command {
         // Create the Platform and Lando application name.
         $platform['name'] = $this->createApplicationID($project['project_name']);
         $lando['name'] = $platform['name'];
+
+        if (empty($project['sites'])) {
+            $io->warning('This project does not have any sites defined, please add some using site:add before running this command.');
+            return Command::INVALID;
+        }
 
         // TODO: Check if config exists, cleanup.
         foreach ($project['sites'] as $site_id => $site) {
