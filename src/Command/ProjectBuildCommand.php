@@ -25,6 +25,8 @@ class ProjectBuildCommand extends Command {
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $filesystem = new Filesystem();
         $io = new SymfonyStyle($input, $output);
+        // List of deployed PlatformSH sites.
+        $deployed_sites = [];
 
         // TODO: Spin most of this code out into separate functions or services
         // and remove all these todo's.
