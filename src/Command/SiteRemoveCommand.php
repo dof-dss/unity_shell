@@ -7,12 +7,12 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 
 #[AsCommand(
     name: 'site:remove',
@@ -23,7 +23,7 @@ use Symfony\Component\Yaml\Yaml;
 class SiteRemoveCommand extends Command {
 
     protected function configure(): void {
-        $this->addArgument('siteid', InputArgument::REQUIRED, 'Site ID (Must be a machine name e.g. uregni)');
+        $this->addArgument('siteid', InputArgument::OPTIONAL, 'Site ID (Must be a machine name e.g. uregni)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
@@ -32,17 +32,28 @@ class SiteRemoveCommand extends Command {
 
         $site_id = $input->getArgument('siteid');
 
+        $project = Yaml::parseFile(getcwd() . '/project/project.yml');
+
+        // Provide a list of sites from the project file for the user to select.
         if (empty($site_id)) {
-            $site_id = $io->ask('Please provide a site ID (e.g. uregni)');
-            if (empty($site_id)) {
-                $io->error('Site ID not given');
-                return Command::FAILURE;
+            $site_options = ['Cancel'];
+            $site_options = array_merge($site_options, array_keys($project['sites']));
+
+            $helper = $this->getHelper('question');
+            $sites_choice_list = new ChoiceQuestion(
+                'Please select a site to remove',
+               $site_options,
+                0
+            );
+            $sites_choice_list->setErrorMessage('Site %s is invalid.');
+
+            $site_id = $helper->ask($input, $output, $sites_choice_list);
+
+            if ($site_id === 'Cancel') {
+                $io->info('Cancelling site removal.');
+                return Command::SUCCESS;
             }
         }
-
-        // TODO: Provide a list of sites from the project file.
-
-        $project = Yaml::parseFile(getcwd() . '/project/project.yml');
 
         if (array_key_exists($site_id, $project['sites'])) {
             unset($project['sites'][$site_id]);
