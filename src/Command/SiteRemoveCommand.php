@@ -51,6 +51,13 @@ class SiteRemoveCommand extends Command {
 
             try {
                 $filesystem->dumpFile(getcwd() . '/project/project.yml', $project_config);
+
+                // Remove the site symlink. This should be done in the
+                // project:build command but that would involve checking all
+                // symlinks under /web/sites and removing those that don't match
+                // a site id, not ideal so we remove it here.
+                $filesystem->remove(getcwd() . '/web/sites/' . $site_id);
+
                 $io->success('Successfully removed ' . $site_id . ' from the project.');
             }
             catch (IOExceptionInterface $exception) {
