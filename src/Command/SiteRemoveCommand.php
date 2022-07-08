@@ -34,6 +34,12 @@ class SiteRemoveCommand extends Command {
 
         $project = Yaml::parseFile(getcwd() . '/project/project.yml');
 
+        // Warn if we have no site entries.
+        if (empty($project['sites'])) {
+            $io->error('This project does not have any site definitions.');
+            return Command::FAILURE;
+        }
+
         // Provide a list of sites from the project file for the user to select.
         if (empty($site_id)) {
             $site_options = ['Cancel'];
