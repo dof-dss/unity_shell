@@ -32,8 +32,8 @@ class ProjectCreateCommand extends Command {
         $project_name = $input->getArgument('name');
 
         if (empty($project_name)) {
-            $project_id = $io->ask('Please provide a project name (Human readable)');
-            if (empty($project_id)) {
+            $project_name = $io->ask('Please provide a project name (Human readable)');
+            if (empty($project_name)) {
                 $io->error('Project name not given');
                 return Command::FAILURE;
             }
