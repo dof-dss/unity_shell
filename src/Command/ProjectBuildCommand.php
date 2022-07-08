@@ -232,13 +232,13 @@ class ProjectBuildCommand extends Command {
         $env_data = parse_ini_file(getcwd() .'/.env');
 
         if (empty($env_data['HASH_SALT'])) {
-            $question = new ConfirmationQuestion('Hash Salt was not found in the .env file. Would you like to add one? (Y/n)', true);
-            $helper = $this->getHelper('question');
-
-            if ($helper->ask($input, $output, $question)) {
-                $io->text('Creating local site hash');
+            if($io->confirm('Hash Salt was not found in the .env file. Would you like to add one?')) {
                 $env_data['HASH_SALT'] = str_replace(['+', '/', '=',], ['-', '_', '',], base64_encode(random_bytes(55)));
-                $this->writeIniFile(getcwd() .'/.env', $env_data);
+                if ($this->writeIniFile(getcwd() .'/.env', $env_data)) {
+                    $io->success('Creating local site hash within .env file');
+                } else {
+                    $io->error('Unable to create local site hash within .env file');
+                }
             }
         }
 
