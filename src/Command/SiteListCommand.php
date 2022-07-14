@@ -25,11 +25,12 @@ class SiteListCommand extends Command {
         $project = Yaml::parseFile(getcwd() . '/project/project.yml');
 
         foreach ($project['sites'] as $site) {
-            $rows[] = [$site['name'],$site['url'],$site['database'],(empty($site['solr'])) ? 'No' : 'Yes',($site['deploy']) ? 'Yes' : 'No'];
+            $rows[] = [$site['name'], $site['url'], $site['database'], (empty($site['solr'])) ? 'No' : 'Yes', ($site['deploy']) ? 'Yes' : 'No'];
         }
 
 
         $table = new Table($output);
+        $table->setHeaderTitle($project['application_name'] . ' (' . $project['application_id'] . ')');
         $table->setHeaders(['Name', 'URL', 'Database', 'Solr', 'Deployed'])
             ->setRows($rows);
         $table->render();
