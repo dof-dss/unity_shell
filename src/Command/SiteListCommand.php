@@ -30,7 +30,7 @@ class SiteListCommand extends Command {
 
 
         $table = new Table($output);
-        $table->setHeaderTitle($project['application_name'] . ' (' . $project['application_id'] . ')');
+        $table->setHeaderTitle($project['project_name'] . ' (' . $project['project_id'] . ')');
         $table->setHeaders(['Name', 'URL', 'Database', 'Solr', 'Deployed'])
             ->setRows($rows);
         $table->render();
