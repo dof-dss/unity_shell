@@ -29,6 +29,7 @@ class ProjectBuildCommand extends Command {
 
         // TODO: Spin most of this code out into separate functions or services
         // and remove all these todo's.
+        // - Display notice when a site is removed and there are files in the project/site_id folder
         // - Remove all config if an entry is removed from project.yml.
         // - Replace getcwd() paths with something more succinct.
         // - Improve error handling.
@@ -124,20 +125,21 @@ class ProjectBuildCommand extends Command {
                 $platform['cron'][$site_id]['cmd'] = $site['cron_cmd'];
             }
 
-            // Create Platform SH route.
-            $io->text('Platform: routing');
-            $platform_routes['https://www.' . $site['url'] . '/'] = [
-                'type' => 'upstream',
-                'upstream' => $platform['name'] . ':http',
-                'cache' => [
-                    'enabled' => 'false'
-                ],
-            ];
+            if (!empty($site['deploy'])) {
+                // Create Platform SH route.
+                $platform_routes['https://www.' . $site['url'] . '/'] = [
+                    'type' => 'upstream',
+                    'upstream' => $platform['name'] . ':http',
+                    'cache' => [
+                        'enabled' => 'false'
+                    ],
+                ];
 
-            $platform_routes['https://' . $site['url'] . '/'] = [
-                'type' => 'redirect',
-                'to' => 'https://www.' . $site['url'] . '/',
-            ];
+                $platform_routes['https://' . $site['url'] . '/'] = [
+                    'type' => 'redirect',
+                    'to' => 'https://www.' . $site['url'] . '/',
+                ];
+            }
 
             // If a site folder doesn't exist under project/sites, create it and provide a settings file.
             if (!$filesystem->exists(getcwd() . '/project/sites/' . $site_id)) {
@@ -174,6 +176,23 @@ class ProjectBuildCommand extends Command {
         $io->text('Updating Platform post-deploy hook');
         $platform['hooks']['post_deploy'] = str_replace('<deployed_sites_placeholder>', implode(' ', $deployed_sites), $platform['hooks']['post_deploy']);
 
+        // Add 'Catch all' to PlatformSH routing.
+        $io->text("Adding 'Catch all' to Platform routes.");
+        $platform_routes['https://www.{all}/'] = [
+            'type' => 'upstream',
+            'upstream' => $platform['name'] . ':http',
+            'cache' => [
+                'enabled' => 'false'
+            ],
+        ];
+
+        $platform_routes['https://{all}/'] = [
+            'type' => 'redirect',
+            'to' => 'https://www.{all}/',
+        ];
+
+
+        // Write configuration files.
         $io->section('Writing configuration files');
         $platform_config = Yaml::dump($platform, 6);
         $platform_routes_config = Yaml::dump($platform_routes, 6);
