@@ -24,6 +24,7 @@ class ProjectBuildCommand extends Command {
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $filesystem = new Filesystem();
         $io = new SymfonyStyle($input, $output);
+        $solr_required = FALSE;
         // List of deployed PlatformSH sites.
         $deployed_sites = [];
 
@@ -116,13 +117,14 @@ class ProjectBuildCommand extends Command {
                 $services['solr']['configuration']['endpoints'][$site_id] = [
                     'core' => $site_id . '_index',
                 ];
+                $solr_required = TRUE;
             }
 
             // Create cron entries.
             if (!empty($site['cron_spec']) && !empty($site['cron_cmd'])) {
                 $io->text('Platform: cron entry');
-                $platform['cron'][$site_id]['spec'] = $site['cron_spec'];
-                $platform['cron'][$site_id]['cmd'] = $site['cron_cmd'];
+                $platform['crons'][$site_id]['spec'] = $site['cron_spec'];
+                $platform['crons'][$site_id]['cmd'] = $site['cron_cmd'];
             }
 
             if (!empty($site['deploy'])) {
@@ -191,6 +193,10 @@ class ProjectBuildCommand extends Command {
             'to' => 'https://www.{all}/',
         ];
 
+        // Remove Solr config if all the sites don't use it.
+        if (!$solr_required) {
+            unset($services['solr']);
+        }
 
         // Write configuration files.
         $io->section('Writing configuration files');
