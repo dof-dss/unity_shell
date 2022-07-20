@@ -99,7 +99,7 @@ class ProjectBuildCommand extends Command {
 
             // Create Platform SH services.
             $io->text('Platform: database config');
-            $services['db']['configuration']['schemas'][] = $site_id;
+            $services['db']['configuration']['schemas'][] = $site_id . 'db';
             $services['db']['configuration']['endpoints'][$site_id] = [
                 'default_schema' => $site_id . 'db',
                 'privileges' => [
@@ -127,7 +127,7 @@ class ProjectBuildCommand extends Command {
                 $platform['crons'][$site_id]['cmd'] = $site['cron_cmd'];
             }
 
-            if (!empty($site['deploy'])) {
+            if (!(bool) ($site['deploy'])) {
                 // Create Platform SH route.
                 $platform_routes['https://www.' . $site['url'] . '/'] = [
                     'type' => 'upstream',
