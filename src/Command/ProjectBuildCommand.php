@@ -193,7 +193,7 @@ class ProjectBuildCommand extends Command {
             'to' => 'https://www.{all}/',
         ];
 
-        // Remove Solr config if all the sites don't use it.
+        // Remove Solr config if none of the sites use Solr.
         if (!$solr_required) {
             unset($services['solr']);
         }
@@ -205,37 +205,23 @@ class ProjectBuildCommand extends Command {
         $platform_services_config = Yaml::dump($services, 6);
         $lando_config = Yaml::dump($lando, 6);
 
-        // TODO: process all these as an array or separate function.
-        try {
-            $filesystem->dumpFile(getcwd() . '/.platform.app.yaml', $platform_config);
-            $io->success('Created Platform app file');
-        }
-        catch (IOExceptionInterface $exception) {
-            $io->error('Unable to create Platform app file, error: ' . $exception->getMessage());
-        }
+        // List of YAML configuration files to be saved.
+        $config_files = [
+            '/.platform.app.yaml' => [$platform_config, 'Platform app'],
+            '/.lando.yml' => [$lando_config, 'Lando configuration'],
+            '/.platform/routes.yaml' => [$platform_routes_config, 'Platform routes'],
+            '/.platform/services.yaml' => [$platform_services_config, 'Platform services'],
+        ];
 
-        try {
-            $filesystem->dumpFile(getcwd() . '/.lando.yml', $lando_config);
-            $io->success('Created Lando file');
-        }
-        catch (IOExceptionInterface $exception) {
-            $io->error('Unable to create Lando file, error: ' . $exception->getMessage());
-        }
-
-        try {
-            $filesystem->dumpFile(getcwd() . '/.platform/routes.yaml', $platform_routes_config);
-            $io->success('Created Platform routes file');
-        }
-        catch (IOExceptionInterface $exception) {
-            $io->error('Unable to create Platform routes file, error: ' . $exception->getMessage());
-        }
-
-        try {
-            $filesystem->dumpFile(getcwd() . '/.platform/services.yaml', $platform_services_config);
-            $io->success('Created Platform services file');
-        }
-        catch (IOExceptionInterface $exception) {
-            $io->error('Unable to create Platform services file, error: ' . $exception->getMessage());
+        // Attempt to write the YAML configuration files.
+        foreach ($config_files as $file => $file_data) {
+            try {
+                $filesystem->dumpFile(getcwd() . $file, $file_data[0]);
+                $io->success("Created $file_data[1] file");
+            }
+            catch (IOExceptionInterface $exception) {
+                $io->error("Unable to create $file_data[1] file, error: " . $exception->getMessage());
+            }
         }
 
         // Copy Platform Solr server configuration.
@@ -292,7 +278,7 @@ class ProjectBuildCommand extends Command {
     }
 
     /**
-     * Create a machine safe application id.
+     * Create a machine safe application ID.
      *
      * @param string $name
      *   Name of the project to create an ID for.
