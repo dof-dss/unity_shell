@@ -76,6 +76,7 @@ class SiteRemoveCommand extends Command {
                 $filesystem->remove(getcwd() . '/web/sites/' . $site_id);
 
                 $io->success('Successfully removed ' . $site_id . ' from the project.');
+                $io->info("NOTE: Existing project assets (modules, theme, config etc) will remain in the project folder and these should be removed if the site is no longer required.");
             }
             catch (IOExceptionInterface $exception) {
                 $io->error('Unable to update Project file, error: ' . $exception->getMessage());

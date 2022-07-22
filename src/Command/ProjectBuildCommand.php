@@ -259,7 +259,7 @@ class ProjectBuildCommand extends Command {
 
         // Steps to take after the project has finished building.
         $post_build_instructions = [
-            "Run 'lando start'",
+            "Run 'lando start' or 'lando rebuild'",
             "Download the site databases using 'platform db:dump'",
             "Import platform databases using 'lando db-import <database name> <platform dump file>'",
             "Download the site files using 'platform mount:download'",
