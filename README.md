@@ -4,8 +4,8 @@ Unity Shell is a command line tool to manage Unity2 projects and sites.
 
 # Requirements
 - A computer
-- PHP 8 CLI
-- Composer 2
+- PHP 8+ CLI
+- Composer 2.1+
 
 # Installing
 
