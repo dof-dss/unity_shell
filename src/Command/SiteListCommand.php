@@ -14,7 +14,7 @@ use Symfony\Component\Yaml\Yaml;
     name: 'site:list',
     description: 'Display a list of sites for this project',
     hidden: false,
-    aliases: ['sa']
+    aliases: ['sl']
 )]
 class SiteListCommand extends Command {
 

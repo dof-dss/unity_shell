@@ -18,7 +18,7 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
     name: 'site:remove',
     description: 'Remove a site from the project',
     hidden: false,
-    aliases: ['sa']
+    aliases: ['sr']
 )]
 class SiteRemoveCommand extends Command {
 
