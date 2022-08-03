@@ -23,6 +23,7 @@ project:build -- Build the current project.
 
 site:add -- Add a new site to the project.  
 site:remove -- Remove a site from the project.  
+site:edit -- Edit details of an existing site.  
 site:list -- List the sites for the project.  
 
 
