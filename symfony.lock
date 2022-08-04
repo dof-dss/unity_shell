@@ -56,9 +56,6 @@
     "symfony/deprecation-contracts": {
         "version": "v3.0.0"
     },
-    "symfony/dotenv": {
-        "version": "v6.0.5"
-    },
     "symfony/error-handler": {
         "version": "v6.0.3"
     },
