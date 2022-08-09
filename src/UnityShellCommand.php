@@ -95,17 +95,12 @@ class UnityShellCommand extends Command {
      * @param $destination_path
      */
     public function copy($original_path, $destination_path) {
-        $this->fs->copy($this->rootPath() . $original_path, $this->rootPath() . $destination_path);
-    }
-
-    /**
-     * Create a .
-     *
-     * @param $original_path
-     * @param $destination_path
-     */
-    public function copy($original_path, $destination_path) {
-        $this->fs->copy($this->rootPath() . $original_path, $this->rootPath() . $destination_path);
+        // If we are dealing with a directory, copy all the contents over.
+        if (empty(pathinfo($original_path, PATHINFO_FILENAME) && empty(pathinfo($original_path, PATHINFO_EXTENSION)))) {
+            $this->mirror($this->rootPath() . $original_path, $this->rootPath() . $destination_path);
+        } else {
+            $this->fs->copy($this->rootPath() . $original_path, $this->rootPath() . $destination_path);
+        }
     }
 
     /*

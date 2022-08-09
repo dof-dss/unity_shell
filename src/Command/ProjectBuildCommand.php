@@ -230,7 +230,7 @@ class ProjectBuildCommand extends UnityShellCommand {
 
         // Copy Platform Solr server configuration.
         try {
-            $filesystem->mirror($this->root() . '/.hosting/platformsh/solr_config', $this->root() . '/.platform/solr_config');
+            $filesystem->copy('/.hosting/platformsh/solr_config', '/.platform/solr_config');
             $io->success('Successfully copied Solr server configuration');
         }
         catch (IOExceptionInterface $exception) {
