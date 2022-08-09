@@ -99,6 +99,23 @@ class UnityShellCommand extends Command {
     }
 
     /**
+     * Create a .
+     *
+     * @param $original_path
+     * @param $destination_path
+     */
+    public function copy($original_path, $destination_path) {
+        $this->fs->copy($this->rootPath() . $original_path, $this->rootPath() . $destination_path);
+    }
+
+    /*
+     * Return the Filesystem object.
+     */
+    protected function fileSystem() {
+        return $this->fs;
+    }
+
+    /**
      * @param $data
      *  Array of data to be written.
      * @param $i

@@ -156,7 +156,7 @@ class ProjectBuildCommand extends UnityShellCommand {
 
             // Enable our multisite entry by linking from the sites dir to the project dir.
             try {
-                $filesystem->symlink('/app/project/sites/' . $site_id, 'web/sites/' . $site_id);
+                $this->fileSystem()->symlink('/app/project/sites/' . $site_id, 'web/sites/' . $site_id);
                 $io->text('Linking sites directory');
             } catch (IOExceptionInterface $exception) {
                 $io->error("An error occurred while linking $site_id site directory: " . $exception->getMessage());
@@ -166,7 +166,7 @@ class ProjectBuildCommand extends UnityShellCommand {
             if (!$this->fileExists('/project/config/' . $site_id)) {
                 $io->text('Creating config directory for ' . $site_id . ' under project/config/');
                 $this->createDirectory('/project/config/' . $site_id);
-                $filesystem->touch($this->root() .  '/project/config/' . $site_id . '/.gitkeep');
+                $this->fileWrite('/project/config/' . $site_id . '/.gitkeep', "");
 
                 // Create the default config directories if they don't already exist.
                 foreach (['config', 'hosted', 'local', 'production'] as $directory) {
