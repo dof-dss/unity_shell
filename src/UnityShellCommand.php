@@ -66,8 +66,37 @@ class UnityShellCommand extends Command {
         }
     }
 
-    public function fileWrite($file_path) {
+    /**
+     * Write content to a file.
+     *
+     * @param $file_path
+     */
+    public function fileWrite($file_path, $contents) {
+        if (str_ends_with($file_path, '.env')) {
+            $contents = $this->writeIniFile($contents);
+        }
 
+        $this->fs->dumpFile($this->rootPath() . $file_path, $contents);
+    }
+
+    /**
+     * @param $data
+     *  Array of data to be written.
+     * @param $i
+     *  ini file index.
+     * @return string
+     */
+    private function writeIniFile(array $data, $i = 0){
+        $str="";
+        foreach ($data as $key => $val){
+            if (is_array($val)) {
+                $str.=str_repeat(" ",$i*2)."[$key]".PHP_EOL;
+                $str.= $this->writeIniFile($val, $i+1);
+            } else {
+                $str.=str_repeat(" ",$i*2)."$key = $val".PHP_EOL;
+            }
+        }
+        return $str;
     }
 
 }

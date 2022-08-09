@@ -84,7 +84,7 @@ class SiteEditCommand extends UnityShellCommand {
             $project_config = Yaml::dump($project, 6);
 
             try {
-                $filesystem->dumpFile($this->root() . '/project/project.yml', $project_config);
+                $this->fileWrite('/project/project.yml', $project_config);
                 $io->success('Updated project file');
 
                 $io->section('Site details for: ' . $site_id);
@@ -98,10 +98,9 @@ class SiteEditCommand extends UnityShellCommand {
                     $return_code = $build_command->run(new ArrayInput([]), $output);
                     return $return_code;
                 }
-                else {
-                    $io->success('Successfully added ' . $site_id . ' to the project.');
-                    return Command::SUCCESS;
-                }
+
+                $io->success('Successfully added ' . $site_id . ' to the project.');
+                return Command::SUCCESS;
             } catch (IOExceptionInterface $exception) {
                 $io->error('Unable to update Project file, error: ' . $exception->getMessage());
                 return Command::FAILURE;

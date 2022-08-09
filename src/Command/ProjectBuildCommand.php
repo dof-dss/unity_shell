@@ -220,7 +220,7 @@ class ProjectBuildCommand extends UnityShellCommand {
         // Attempt to write the YAML configuration files.
         foreach ($config_files as $file => $file_data) {
             try {
-                $filesystem->dumpFile($this->root() . $file, $file_data[0]);
+                $this->fileWrite($file, $file_data[0]);
                 $io->success("Created $file_data[1] file");
             }
             catch (IOExceptionInterface $exception) {
@@ -254,11 +254,9 @@ class ProjectBuildCommand extends UnityShellCommand {
         if (empty($env_data['HASH_SALT'])) {
             if($io->confirm('Hash Salt was not found in the .env file. Would you like to add one?')) {
                 $env_data['HASH_SALT'] = str_replace(['+', '/', '=',], ['-', '_', '',], base64_encode(random_bytes(55)));
-                if ($this->writeIniFile($this->root() .'/.env', $env_data)) {
-                    $io->success('Creating local site hash within .env file');
-                } else {
-                    $io->error('Unable to create local site hash within .env file');
-                }
+                $this->fileWrite('/.env', $env_data);
+                $io->success('Creating local site hash within .env file');
+
             }
         }
 
@@ -293,25 +291,6 @@ class ProjectBuildCommand extends UnityShellCommand {
        return strtolower(str_replace(' ', '_', $name));
    }
 
-    /**
-     * @param $file
-     *  File path to write the ini data to.
-     * @param $array
-     *  Array of data to be written
-     * @param $i
-     * @return false|int|string
-     */
-   private function writeIniFile(string $file, array $array, $i = 0){
-        $str="";
-        foreach ($array as $k => $v){
-            if (is_array($v)) {
-                $str.=str_repeat(" ",$i*2)."[$k]".PHP_EOL;
-                $str.= $this->writeIniFile("",$v, $i+1);
-            } else {
-                $str.=str_repeat(" ",$i*2)."$k = $v".PHP_EOL;
-            }
-        }
-       return file_put_contents($file, $str);
-    }
+
 
 }

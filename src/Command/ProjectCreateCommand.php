@@ -62,7 +62,7 @@ class ProjectCreateCommand extends UnityShellCommand {
         $project_config = Yaml::dump($project, 6);
 
         try {
-            $filesystem->dumpFile($this->root() . '/project/project.yml', $project_config);
+            $this->fileWrite('/project/project.yml', $project_config);
             $io->success('Created project file');
 
             if($io->confirm('Would you like to add a site to the project?')) {
@@ -70,10 +70,7 @@ class ProjectCreateCommand extends UnityShellCommand {
 
                 $return_code = $build_command->run(new ArrayInput([]), $output);
                 return $return_code;
-            } else {
-                return Command::SUCCESS;
             }
-
             return Command::SUCCESS;
         }
         catch (IOExceptionInterface $exception) {

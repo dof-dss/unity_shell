@@ -68,7 +68,7 @@ class SiteRemoveCommand extends UnityShellCommand {
             $project_config = Yaml::dump($project, 6);
 
             try {
-                $filesystem->dumpFile(getcwd() . '/project/project.yml', $project_config);
+                $this->fileWrite('/project/project.yml', $project_config);
 
                 // Remove the site symlink. This should be done in the
                 // project:build command but that would involve checking all
@@ -89,13 +89,13 @@ class SiteRemoveCommand extends UnityShellCommand {
 
                 $return_code = $build_command->run(new ArrayInput([]), $output);
                 return $return_code;
-            } else {
-                $io->success('Successfully removed ' . $site_id . ' from the project.');
-                return Command::SUCCESS;
             }
-        } else {
-            $io->error('Site ' . $site_id . ' not found within Projects file.');
-            return Command::FAILURE;
+
+            $io->success('Successfully removed ' . $site_id . ' from the project.');
+            return Command::SUCCESS;
         }
+
+        $io->error('Site ' . $site_id . ' not found within Projects file.');
+        return Command::FAILURE;
     }
 }
