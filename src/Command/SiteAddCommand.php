@@ -27,7 +27,6 @@ class SiteAddCommand extends UnityShellCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $io = new SymfonyStyle($input, $output);
-        $filesystem = new Filesystem();
 
         $site_id = $input->getArgument('siteid');
 
@@ -39,7 +38,8 @@ class SiteAddCommand extends UnityShellCommand {
             }
         }
 
-        $project = Yaml::parseFile($this->root() . '/project/project.yml');
+        // Unity2 Project file.
+        $project = $this->fileRead('/project/project.yml');
 
         // TODO: Check if a site with that ID exists.
 

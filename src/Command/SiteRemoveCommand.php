@@ -29,11 +29,11 @@ class SiteRemoveCommand extends UnityShellCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $io = new SymfonyStyle($input, $output);
-        $filesystem = new Filesystem();
 
         $site_id = $input->getArgument('siteid');
 
-        $project = Yaml::parseFile($this->root() . '/project/project.yml');
+        // Unity2 Project file.
+        $project = $this->fileRead('/project/project.yml');
 
         // Warn if we have no site entries.
         if (empty($project['sites'])) {

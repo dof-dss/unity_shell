@@ -35,6 +35,11 @@ class UnityShellCommand extends Command {
         return $this->projectRoot;
     }
 
+    /** Check for the existence of a file or directory.
+     *
+     * @param $file_path
+     * @return bool
+     */
     public function fileExists($file_path) {
         return $this->fs->exists($this->rootPath() . $file_path);
     }

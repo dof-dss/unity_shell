@@ -28,7 +28,6 @@ class ProjectCreateCommand extends UnityShellCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $io = new SymfonyStyle($input, $output);
-        $filesystem = new Filesystem();
 
         $project_name = $input->getArgument('name');
 
@@ -50,7 +49,7 @@ class ProjectCreateCommand extends UnityShellCommand {
             }
         }
 
-        if (!$filesystem->exists($this->root() . '/project')) {
+        if (!$this->fileExists('/project')) {
             $filesystem->mkdir($this->root() . '/project');
             $filesystem->mkdir($this->root() . '/project/config');
             $filesystem->mkdir($this->root() . '/project/sites');

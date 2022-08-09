@@ -47,11 +47,12 @@ class ProjectBuildCommand extends UnityShellCommand {
 
         $io->title('Building host environment');
 
-        $project = Yaml::parseFile($this->root() . '/project/project.yml');
+        // Unity2 Project file.
+        $project = $this->fileRead('/project/project.yml');
 
         // Platform SH specific configuration.
-        $platform = Yaml::parseFile($this->root() . '/.hosting/platformsh/.platform.app.template.yaml');
-        $services = Yaml::parseFile($this->root() . '/.hosting/platformsh/.services.template.yaml');
+        $platform = $this->fileRead('/.hosting/platformsh/.platform.app.template.yaml');
+        $services = $this->fileRead('/.hosting/platformsh/.services.template.yaml');
 
         // Create the Platform and Lando application name.
         $platform['name'] = $this->createApplicationID($project['project_name']);
@@ -147,7 +148,7 @@ class ProjectBuildCommand extends UnityShellCommand {
             }
 
             // If a site folder doesn't exist under project/sites, create it and provide a settings file.
-            if (!$filesystem->exists($this->root() . '/project/sites/' . $site_id)) {
+            if (!$this->fileExists('/project/sites/' . $site_id)) {
                 $io->text('Creating a site directory for ' . $site_id . ' under project/sites/');
                 $filesystem->mkdir($this->root() .  '/project/sites/' . $site_id);
                 $filesystem->copy($this->root() . '/.lando/config/multisite.settings.php', $this->root() . '/project/sites/' . $site_id . '/settings.php' );
@@ -162,7 +163,7 @@ class ProjectBuildCommand extends UnityShellCommand {
             }
 
             // If a site config doesn't exist under project/config, create it.
-            if (!$filesystem->exists($this->root() . '/project/config/' . $site_id)) {
+            if (!$this->fileExists('/project/config/' . $site_id)) {
                 $io->text('Creating config directory for ' . $site_id . ' under project/config/');
                 $filesystem->mkdir($this->root() .  '/project/config/' . $site_id);
                 $filesystem->touch($this->root() .  '/project/config/' . $site_id . '/.gitkeep');
@@ -170,7 +171,7 @@ class ProjectBuildCommand extends UnityShellCommand {
                 // Create the default config directories if they don't already exist.
                 foreach (['config', 'hosted', 'local', 'production'] as $directory) {
                     $io->text('Creating default config directories');
-                    if (!$filesystem->exists($this->root() . '/project/config/' . $site_id . '/config/' . $directory)) {
+                    if (!!$this->fileExists('/project/config/' . $site_id . '/config/' . $directory)) {
                         $filesystem->mkdir($this->root() . '/project/config/' . $site_id . '/config/' . $directory);
                     }
                 }
@@ -236,8 +237,8 @@ class ProjectBuildCommand extends UnityShellCommand {
             $io->error('Unable to copy Solr server configuration, error: ' . $exception->getMessage());
         }
 
-        // Check for an .env file and copy example if missing
-        if (!$filesystem->exists($this->root() .'/.env')) {
+        // Check for an .env file and copy example if missing.
+        if (!$this->fileExists('/.env')) {
             try {
                 $filesystem->copy($this->root() . '/.env.sample', $this->root() . '/.env');
                 $io->success('Created local .env file');
@@ -247,7 +248,8 @@ class ProjectBuildCommand extends UnityShellCommand {
             }
         }
 
-        $env_data = parse_ini_file($this->root() .'/.env');
+        // Read .env file to check for some default Drupal environment settings.
+        $env_data = $this->fileRead('/.env');
 
         if (empty($env_data['HASH_SALT'])) {
             if($io->confirm('Hash Salt was not found in the .env file. Would you like to add one?')) {
@@ -269,7 +271,7 @@ class ProjectBuildCommand extends UnityShellCommand {
         ];
 
         // Check for the vendor dir and add message to instructions.
-        if (!$filesystem->exists($this->root() .'/vendor')) {
+        if (!$this->fileExists('/vendor')) {
             $post_build_instructions[] = "Run 'lando composer install' to install the project dependencies.";
         }
 

@@ -20,10 +20,10 @@ use Symfony\Component\Yaml\Yaml;
 class SiteListCommand extends UnityShellCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
-        $io = new SymfonyStyle($input, $output);
         $rows = [];
 
-        $project = Yaml::parseFile($this->root() . '/project/project.yml');
+        // Unity2 Project file.
+        $project = $this->fileRead('/project/project.yml');
 
         foreach ($project['sites'] as $site) {
             $rows[] = [$site['name'], $site['url'], $site['database'], (empty($site['solr'])) ? 'No' : 'Yes', ($site['deploy']) ? 'Yes' : 'No'];
