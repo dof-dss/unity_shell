@@ -150,7 +150,7 @@ class ProjectBuildCommand extends UnityShellCommand {
             // If a site folder doesn't exist under project/sites, create it and provide a settings file.
             if (!$this->fileExists('/project/sites/' . $site_id)) {
                 $io->text('Creating a site directory for ' . $site_id . ' under project/sites/');
-                $filesystem->mkdir($this->root() .  '/project/sites/' . $site_id);
+                $this->createDirectory('/project/sites/' . $site_id);
                 $filesystem->copy($this->root() . '/.lando/config/multisite.settings.php', $this->root() . '/project/sites/' . $site_id . '/settings.php' );
             }
 
@@ -165,14 +165,14 @@ class ProjectBuildCommand extends UnityShellCommand {
             // If a site config doesn't exist under project/config, create it.
             if (!$this->fileExists('/project/config/' . $site_id)) {
                 $io->text('Creating config directory for ' . $site_id . ' under project/config/');
-                $filesystem->mkdir($this->root() .  '/project/config/' . $site_id);
+                $this->createDirectory('/project/config/' . $site_id);
                 $filesystem->touch($this->root() .  '/project/config/' . $site_id . '/.gitkeep');
 
                 // Create the default config directories if they don't already exist.
                 foreach (['config', 'hosted', 'local', 'production'] as $directory) {
                     $io->text('Creating default config directories');
                     if (!!$this->fileExists('/project/config/' . $site_id . '/config/' . $directory)) {
-                        $filesystem->mkdir($this->root() . '/project/config/' . $site_id . '/config/' . $directory);
+                        $this->createDirectory('/project/config/' . $site_id . '/config/' . $directory);
                     }
                 }
             }

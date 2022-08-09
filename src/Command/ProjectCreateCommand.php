@@ -50,9 +50,9 @@ class ProjectCreateCommand extends UnityShellCommand {
         }
 
         if (!$this->fileExists('/project')) {
-            $filesystem->mkdir($this->root() . '/project');
-            $filesystem->mkdir($this->root() . '/project/config');
-            $filesystem->mkdir($this->root() . '/project/sites');
+            $this->createDirectory('/project');
+            $this->createDirectory('/project/config');
+            $this->createDirectory('/project/sites');
             $io->info('Creating project directory.');
         }
 

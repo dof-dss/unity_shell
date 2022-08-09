@@ -80,6 +80,15 @@ class UnityShellCommand extends Command {
     }
 
     /**
+     * Create a directory.
+     *
+     * @param $path
+     */
+    public function createDirectory($path) {
+        $this->fs->mkdir($this->rootPath() . $path);
+    }
+
+    /**
      * @param $data
      *  Array of data to be written.
      * @param $i
