@@ -151,7 +151,7 @@ class ProjectBuildCommand extends UnityShellCommand {
             if (!$this->fileExists('/project/sites/' . $site_id)) {
                 $io->text('Creating a site directory for ' . $site_id . ' under project/sites/');
                 $this->createDirectory('/project/sites/' . $site_id);
-                $filesystem->copy($this->root() . '/.lando/config/multisite.settings.php', $this->root() . '/project/sites/' . $site_id . '/settings.php' );
+                $this->copy('/.lando/config/multisite.settings.php', '/project/sites/' . $site_id . '/settings.php' );
             }
 
             // Enable our multisite entry by linking from the sites dir to the project dir.
@@ -240,7 +240,7 @@ class ProjectBuildCommand extends UnityShellCommand {
         // Check for an .env file and copy example if missing.
         if (!$this->fileExists('/.env')) {
             try {
-                $filesystem->copy($this->root() . '/.env.sample', $this->root() . '/.env');
+                $this->copy('/.env.sample', '/.env');
                 $io->success('Created local .env file');
             }
             catch (IOExceptionInterface $exception) {

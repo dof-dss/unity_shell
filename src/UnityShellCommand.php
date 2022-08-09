@@ -89,6 +89,16 @@ class UnityShellCommand extends Command {
     }
 
     /**
+     * Copy a file or directory.
+     *
+     * @param $original_path
+     * @param $destination_path
+     */
+    public function copy($original_path, $destination_path) {
+        $this->fs->copy($this->rootPath() . $original_path, $this->rootPath() . $destination_path);
+    }
+
+    /**
      * @param $data
      *  Array of data to be written.
      * @param $i
