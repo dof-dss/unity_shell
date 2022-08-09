@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\UnityShellCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,13 +17,13 @@ use Symfony\Component\Yaml\Yaml;
     hidden: false,
     aliases: ['sl']
 )]
-class SiteListCommand extends Command {
+class SiteListCommand extends UnityShellCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $io = new SymfonyStyle($input, $output);
         $rows = [];
 
-        $project = Yaml::parseFile(getcwd() . '/project/project.yml');
+        $project = Yaml::parseFile($this->root() . '/project/project.yml');
 
         foreach ($project['sites'] as $site) {
             $rows[] = [$site['name'], $site['url'], $site['database'], (empty($site['solr'])) ? 'No' : 'Yes', ($site['deploy']) ? 'Yes' : 'No'];

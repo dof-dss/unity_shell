@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\UnityShellCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -19,7 +20,7 @@ use Symfony\Component\Yaml\Yaml;
     hidden: false,
     aliases: ['sa']
 )]
-class SiteAddCommand extends Command {
+class SiteAddCommand extends UnityShellCommand {
     protected function configure(): void {
         $this->addArgument('siteid', InputArgument::OPTIONAL, 'Site ID (Must be a machine name e.g. uregni)');
     }
@@ -38,7 +39,7 @@ class SiteAddCommand extends Command {
             }
         }
 
-        $project = Yaml::parseFile(getcwd() . '/project/project.yml');
+        $project = Yaml::parseFile($this->root() . '/project/project.yml');
 
         // TODO: Check if a site with that ID exists.
 
@@ -65,7 +66,7 @@ class SiteAddCommand extends Command {
         $project_config = Yaml::dump($project, 6);
 
         try {
-            $filesystem->dumpFile(getcwd() . '/project/project.yml', $project_config);
+            $filesystem->dumpFile($this->root() . '/project/project.yml', $project_config);
             $io->success('Updated project file');
 
             $io->section('Site details for: ' . $site_id);

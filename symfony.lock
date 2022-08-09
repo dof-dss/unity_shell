@@ -159,5 +159,8 @@
     },
     "symfony/yaml": {
         "version": "v6.0.3"
+    },
+    "webflo/drupal-finder": {
+        "version": "1.2.2"
     }
 }

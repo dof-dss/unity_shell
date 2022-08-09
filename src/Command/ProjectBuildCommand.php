@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\UnityShellCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,7 +18,7 @@ use Symfony\Component\Yaml\Yaml;
     hidden: false,
     aliases: ['pb']
 )]
-class ProjectBuildCommand extends Command {
+class ProjectBuildCommand extends UnityShellCommand {
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'project:build';
 
@@ -36,19 +37,21 @@ class ProjectBuildCommand extends Command {
         // - Improve error handling.
         // - Download Platform databases.
 
+        $io->info($this->root());
+
         // Check we are running in the root of a Unity repo and have a project file.
-        if (!$filesystem->exists(getcwd() . '/project/project.yml')) {
+        if (!$this->fileExists('/project/project.yml')) {
             $io->error('Please ensure you are in the root of a Unity project and that project/project.yml exists before running this command.');
             return Command::FAILURE;
         }
 
         $io->title('Building host environment');
 
-        $project = Yaml::parseFile(getcwd() . '/project/project.yml');
+        $project = Yaml::parseFile($this->root() . '/project/project.yml');
 
         // Platform SH specific configuration.
-        $platform = Yaml::parseFile(getcwd() . '/.hosting/platformsh/.platform.app.template.yaml');
-        $services = Yaml::parseFile(getcwd() . '/.hosting/platformsh/.services.template.yaml');
+        $platform = Yaml::parseFile($this->root() . '/.hosting/platformsh/.platform.app.template.yaml');
+        $services = Yaml::parseFile($this->root() . '/.hosting/platformsh/.services.template.yaml');
 
         // Create the Platform and Lando application name.
         $platform['name'] = $this->createApplicationID($project['project_name']);
@@ -144,10 +147,10 @@ class ProjectBuildCommand extends Command {
             }
 
             // If a site folder doesn't exist under project/sites, create it and provide a settings file.
-            if (!$filesystem->exists(getcwd() . '/project/sites/' . $site_id)) {
+            if (!$filesystem->exists($this->root() . '/project/sites/' . $site_id)) {
                 $io->text('Creating a site directory for ' . $site_id . ' under project/sites/');
-                $filesystem->mkdir(getcwd() .  '/project/sites/' . $site_id);
-                $filesystem->copy(getcwd() . '/.lando/config/multisite.settings.php', getcwd() . '/project/sites/' . $site_id . '/settings.php' );
+                $filesystem->mkdir($this->root() .  '/project/sites/' . $site_id);
+                $filesystem->copy($this->root() . '/.lando/config/multisite.settings.php', $this->root() . '/project/sites/' . $site_id . '/settings.php' );
             }
 
             // Enable our multisite entry by linking from the sites dir to the project dir.
@@ -159,16 +162,16 @@ class ProjectBuildCommand extends Command {
             }
 
             // If a site config doesn't exist under project/config, create it.
-            if (!$filesystem->exists(getcwd() . '/project/config/' . $site_id)) {
+            if (!$filesystem->exists($this->root() . '/project/config/' . $site_id)) {
                 $io->text('Creating config directory for ' . $site_id . ' under project/config/');
-                $filesystem->mkdir(getcwd() .  '/project/config/' . $site_id);
-                $filesystem->touch(getcwd() .  '/project/config/' . $site_id . '/.gitkeep');
+                $filesystem->mkdir($this->root() .  '/project/config/' . $site_id);
+                $filesystem->touch($this->root() .  '/project/config/' . $site_id . '/.gitkeep');
 
                 // Create the default config directories if they don't already exist.
                 foreach (['config', 'hosted', 'local', 'production'] as $directory) {
                     $io->text('Creating default config directories');
-                    if (!$filesystem->exists(getcwd() . '/project/config/' . $site_id . '/config/' . $directory)) {
-                        $filesystem->mkdir(getcwd() . '/project/config/' . $site_id . '/config/' . $directory);
+                    if (!$filesystem->exists($this->root() . '/project/config/' . $site_id . '/config/' . $directory)) {
+                        $filesystem->mkdir($this->root() . '/project/config/' . $site_id . '/config/' . $directory);
                     }
                 }
             }
@@ -216,7 +219,7 @@ class ProjectBuildCommand extends Command {
         // Attempt to write the YAML configuration files.
         foreach ($config_files as $file => $file_data) {
             try {
-                $filesystem->dumpFile(getcwd() . $file, $file_data[0]);
+                $filesystem->dumpFile($this->root() . $file, $file_data[0]);
                 $io->success("Created $file_data[1] file");
             }
             catch (IOExceptionInterface $exception) {
@@ -226,7 +229,7 @@ class ProjectBuildCommand extends Command {
 
         // Copy Platform Solr server configuration.
         try {
-            $filesystem->mirror(getcwd() . '/.hosting/platformsh/solr_config', getcwd() . '/.platform/solr_config');
+            $filesystem->mirror($this->root() . '/.hosting/platformsh/solr_config', $this->root() . '/.platform/solr_config');
             $io->success('Successfully copied Solr server configuration');
         }
         catch (IOExceptionInterface $exception) {
@@ -234,9 +237,9 @@ class ProjectBuildCommand extends Command {
         }
 
         // Check for an .env file and copy example if missing
-        if (!$filesystem->exists(getcwd() .'/.env')) {
+        if (!$filesystem->exists($this->root() .'/.env')) {
             try {
-                $filesystem->copy(getcwd() . '/.env.sample', getcwd() . '/.env');
+                $filesystem->copy($this->root() . '/.env.sample', $this->root() . '/.env');
                 $io->success('Created local .env file');
             }
             catch (IOExceptionInterface $exception) {
@@ -244,12 +247,12 @@ class ProjectBuildCommand extends Command {
             }
         }
 
-        $env_data = parse_ini_file(getcwd() .'/.env');
+        $env_data = parse_ini_file($this->root() .'/.env');
 
         if (empty($env_data['HASH_SALT'])) {
             if($io->confirm('Hash Salt was not found in the .env file. Would you like to add one?')) {
                 $env_data['HASH_SALT'] = str_replace(['+', '/', '=',], ['-', '_', '',], base64_encode(random_bytes(55)));
-                if ($this->writeIniFile(getcwd() .'/.env', $env_data)) {
+                if ($this->writeIniFile($this->root() .'/.env', $env_data)) {
                     $io->success('Creating local site hash within .env file');
                 } else {
                     $io->error('Unable to create local site hash within .env file');
@@ -266,7 +269,7 @@ class ProjectBuildCommand extends Command {
         ];
 
         // Check for the vendor dir and add message to instructions.
-        if (!$filesystem->exists(getcwd() .'/vendor')) {
+        if (!$filesystem->exists($this->root() .'/vendor')) {
             $post_build_instructions[] = "Run 'lando composer install' to install the project dependencies.";
         }
 

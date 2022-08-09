@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\UnityShellCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -19,7 +20,7 @@ use Symfony\Component\Yaml\Yaml;
     hidden: false,
     aliases: ['pc']
 )]
-class ProjectCreateCommand extends Command {
+class ProjectCreateCommand extends UnityShellCommand {
     protected function configure(): void {
         $this->addArgument('name', InputArgument::OPTIONAL, 'Project name');
         $this->addArgument('id', InputArgument::OPTIONAL, 'PlatformSH project ID');
@@ -49,10 +50,10 @@ class ProjectCreateCommand extends Command {
             }
         }
 
-        if (!$filesystem->exists(getcwd() . '/project')) {
-            $filesystem->mkdir(getcwd() . '/project');
-            $filesystem->mkdir(getcwd() . '/project/config');
-            $filesystem->mkdir(getcwd() . '/project/sites');
+        if (!$filesystem->exists($this->root() . '/project')) {
+            $filesystem->mkdir($this->root() . '/project');
+            $filesystem->mkdir($this->root() . '/project/config');
+            $filesystem->mkdir($this->root() . '/project/sites');
             $io->info('Creating project directory.');
         }
 
@@ -62,7 +63,7 @@ class ProjectCreateCommand extends Command {
         $project_config = Yaml::dump($project, 6);
 
         try {
-            $filesystem->dumpFile(getcwd() . '/project/project.yml', $project_config);
+            $filesystem->dumpFile($this->root() . '/project/project.yml', $project_config);
             $io->success('Created project file');
 
             if($io->confirm('Would you like to add a site to the project?')) {

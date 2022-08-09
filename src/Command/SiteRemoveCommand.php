@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\UnityShellCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -20,7 +21,7 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
     hidden: false,
     aliases: ['sr']
 )]
-class SiteRemoveCommand extends Command {
+class SiteRemoveCommand extends UnityShellCommand {
 
     protected function configure(): void {
         $this->addArgument('siteid', InputArgument::OPTIONAL, 'Site ID (Must be a machine name e.g. uregni)');
@@ -32,7 +33,7 @@ class SiteRemoveCommand extends Command {
 
         $site_id = $input->getArgument('siteid');
 
-        $project = Yaml::parseFile(getcwd() . '/project/project.yml');
+        $project = Yaml::parseFile($this->root() . '/project/project.yml');
 
         // Warn if we have no site entries.
         if (empty($project['sites'])) {
