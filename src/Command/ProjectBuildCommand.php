@@ -8,7 +8,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Tag\TaggedValue;
 use Symfony\Component\Yaml\Yaml;
 
@@ -23,7 +22,6 @@ class ProjectBuildCommand extends UnityShellCommand {
     protected static $defaultName = 'project:build';
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
-        $filesystem = new Filesystem();
         $io = new SymfonyStyle($input, $output);
         $solr_required = FALSE;
         // List of deployed PlatformSH sites.
@@ -230,7 +228,7 @@ class ProjectBuildCommand extends UnityShellCommand {
 
         // Copy Platform Solr server configuration.
         try {
-            $filesystem->copy('/.hosting/platformsh/solr_config', '/.platform/solr_config');
+            $this->copy('/.hosting/platformsh/solr_config', '/.platform/solr_config');
             $io->success('Successfully copied Solr server configuration');
         }
         catch (IOExceptionInterface $exception) {

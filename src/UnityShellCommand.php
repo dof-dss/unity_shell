@@ -5,7 +5,6 @@ namespace App;
 use App\Command\AsCommand;
 use DrupalFinder\DrupalFinder;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 
@@ -101,6 +100,15 @@ class UnityShellCommand extends Command {
         } else {
             $this->fs->copy($this->rootPath() . $original_path, $this->rootPath() . $destination_path);
         }
+    }
+
+    /**
+     * Remove a file or directory.
+     *
+     * @param $path
+     */
+    public function remove($path) {
+        $this->fs->remove($this->rootPath() . $path);
     }
 
     /*

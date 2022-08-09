@@ -11,7 +11,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
@@ -74,7 +73,7 @@ class SiteRemoveCommand extends UnityShellCommand {
                 // project:build command but that would involve checking all
                 // symlinks under /web/sites and removing those that don't match
                 // a site id, not ideal so we remove it here.
-                $filesystem->remove(getcwd() . '/web/sites/' . $site_id);
+                $this->remove('/web/sites/' . $site_id);
 
                 $io->success('Successfully removed ' . $site_id . ' from the project.');
                 $io->info("NOTE: Existing project assets (modules, theme, config etc) will remain in the project folder and these should be removed if the site is no longer required.");
