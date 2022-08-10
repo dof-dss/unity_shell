@@ -31,11 +31,8 @@ class ProjectBuildCommand extends UnityShellCommand {
         // and remove all these todo's.
         // - Display notice when a site is removed and there are files in the project/site_id folder
         // - Remove all config if an entry is removed from project.yml.
-        // - Replace getcwd() paths with something more succinct.
         // - Improve error handling.
         // - Download Platform databases.
-
-        $io->info($this->root());
 
         // Check we are running in the root of a Unity repo and have a project file.
         if (!$this->fileExists('/project/project.yml')) {
