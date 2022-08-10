@@ -251,7 +251,6 @@ class ProjectBuildCommand extends UnityShellCommand {
                 $env_data['HASH_SALT'] = str_replace(['+', '/', '=',], ['-', '_', '',], base64_encode(random_bytes(55)));
                 $this->fileWrite('/.env', $env_data);
                 $io->success('Creating local site hash within .env file');
-
             }
         }
 

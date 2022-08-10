@@ -58,8 +58,8 @@ class UnityShellCommand extends Command {
             case 'yaml':
             case 'yml':
                 return Yaml::parseFile($this->rootPath() . $file_path);
-            case '.env':
-                return parse_ini_file($this->rootPath() . $file_path);
+            case 'env':
+                return (array) parse_ini_file($this->rootPath() . $file_path);
             default:
                 return file_get_contents($this->rootPath() . $file_path);
         }
