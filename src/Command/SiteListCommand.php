@@ -23,7 +23,7 @@ class SiteListCommand extends UnityShellCommand {
         $rows = [];
 
         // Unity2 Project file.
-        $project = $this->fileRead('/project/project.yml');
+        $project = $this->fs()->readFile('/project/project.yml');
 
         foreach ($project['sites'] as $site) {
             $rows[] = [$site['name'], $site['url'], $site['database'], (empty($site['solr'])) ? 'No' : 'Yes', ($site['deploy']) ? 'Yes' : 'No'];

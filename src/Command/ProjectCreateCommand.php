@@ -48,10 +48,10 @@ class ProjectCreateCommand extends UnityShellCommand {
             }
         }
 
-        if (!$this->fileExists('/project')) {
-            $this->createDirectory('/project');
-            $this->createDirectory('/project/config');
-            $this->createDirectory('/project/sites');
+        if (!$this->fs()->exists('/project')) {
+            $this->fs()->mkdir('/project');
+            $this->fs()->mkdir('/project/config');
+            $this->fs()->mkdir('/project/sites');
             $io->info('Creating project directory.');
         }
 
@@ -61,7 +61,7 @@ class ProjectCreateCommand extends UnityShellCommand {
         $project_config = Yaml::dump($project, 6);
 
         try {
-            $this->fileWrite('/project/project.yml', $project_config);
+            $this->fs()->dumpFile('/project/project.yml', $project_config);
             $io->success('Created project file');
 
             if($io->confirm('Would you like to add a site to the project?')) {

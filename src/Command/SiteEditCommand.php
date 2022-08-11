@@ -32,7 +32,7 @@ class SiteEditCommand extends UnityShellCommand {
         $site_id = $input->getArgument('siteid');
 
         // Unity2 Project file.
-        $project = $this->fileRead('/project/project.yml');
+        $project = $this->fs()->readFile('/project/project.yml');
 
         // Warn if we have no site entries.
         if (empty($project['sites'])) {
@@ -83,7 +83,7 @@ class SiteEditCommand extends UnityShellCommand {
             $project_config = Yaml::dump($project, 6);
 
             try {
-                $this->fileWrite('/project/project.yml', $project_config);
+                $this->fs()->dumpFile('/project/project.yml', $project_config);
                 $io->success('Updated project file');
 
                 $io->section('Site details for: ' . $site_id);

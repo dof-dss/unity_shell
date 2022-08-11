@@ -32,7 +32,7 @@ class SiteRemoveCommand extends UnityShellCommand {
         $site_id = $input->getArgument('siteid');
 
         // Unity2 Project file.
-        $project = $this->fileRead('/project/project.yml');
+        $project = $this->fs()->readFile('/project/project.yml');
 
         // Warn if we have no site entries.
         if (empty($project['sites'])) {
@@ -67,13 +67,13 @@ class SiteRemoveCommand extends UnityShellCommand {
             $project_config = Yaml::dump($project, 6);
 
             try {
-                $this->fileWrite('/project/project.yml', $project_config);
+                $this->fs()->dumpFile('/project/project.yml', $project_config);
 
                 // Remove the site symlink. This should be done in the
                 // project:build command but that would involve checking all
                 // symlinks under /web/sites and removing those that don't match
                 // a site id, not ideal so we remove it here.
-                $this->remove('/web/sites/' . $site_id);
+                $this->fs()->remove('/web/sites/' . $site_id);
 
                 $io->success('Successfully removed ' . $site_id . ' from the project.');
                 $io->info("NOTE: Existing project assets (modules, theme, config etc) will remain in the project folder and these should be removed if the site is no longer required.");

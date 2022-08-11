@@ -10,6 +10,8 @@ use Symfony\Component\Yaml\Yaml;
  *
  * This decorator mirrors the FileSystem component but also provides
  * custom methods for reading and writing files.
+ *
+ * See: https://symfony.com/doc/current/components/filesystem.html
  */
 class FileSystemDecorator {
 
@@ -74,7 +76,7 @@ class FileSystemDecorator {
      *
      * @param $file_path
      */
-    public function dumpFile($file_path, $contents) {
+    protected function dumpFile($file_path, $contents) {
         if (str_ends_with($file_path, '.env')) {
             $contents = $this->writeIniFile($contents);
         }

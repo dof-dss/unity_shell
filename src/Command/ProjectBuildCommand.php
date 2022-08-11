@@ -43,11 +43,11 @@ class ProjectBuildCommand extends UnityShellCommand {
         $io->title('Building host environment');
 
         // Unity2 Project file.
-        $project = $this->fileRead('/project/project.yml');
+        $project = $this->fs()->readFile('/project/project.yml');
 
         // Platform SH specific configuration.
-        $platform = $this->fileRead('/.hosting/platformsh/.platform.app.template.yaml');
-        $services = $this->fileRead('/.hosting/platformsh/.services.template.yaml');
+        $platform = $this->fs()->readFile('/.hosting/platformsh/.platform.app.template.yaml');
+        $services = $this->fs()->readFile('/.hosting/platformsh/.services.template.yaml');
 
         // Create the Platform and Lando application name.
         $platform['name'] = $this->createApplicationID($project['project_name']);
@@ -143,30 +143,30 @@ class ProjectBuildCommand extends UnityShellCommand {
             }
 
             // If a site folder doesn't exist under project/sites, create it and provide a settings file.
-            if (!$this->fileExists('/project/sites/' . $site_id)) {
+            if (!$this->fs()->exists('/project/sites/' . $site_id)) {
                 $io->text('Creating a site directory for ' . $site_id . ' under project/sites/');
-                $this->createDirectory('/project/sites/' . $site_id);
-                $this->copy('/.lando/config/multisite.settings.php', '/project/sites/' . $site_id . '/settings.php' );
+                $this->fs()->mkdir('/project/sites/' . $site_id);
+                $this->fs()->copy('/.lando/config/multisite.settings.php', '/project/sites/' . $site_id . '/settings.php' );
             }
 
             // Enable our multisite entry by linking from the sites dir to the project dir.
             try {
-                $this->fileSystem()->symlink('/app/project/sites/' . $site_id, 'web/sites/' . $site_id);
+                $this->fs()->symlink('/app/project/sites/' . $site_id, 'web/sites/' . $site_id);
                 $io->text('Linking sites directory');
             } catch (IOExceptionInterface $exception) {
                 $io->error("An error occurred while linking $site_id site directory: " . $exception->getMessage());
             }
 
             // If a site config doesn't exist under project/config, create it.
-            if (!$this->fileExists('/project/config/' . $site_id)) {
+            if (!$this->fs()->exists('/project/config/' . $site_id)) {
                 $io->text('Creating config directory for ' . $site_id . ' under project/config/');
-                $this->createDirectory('/project/config/' . $site_id);
-                $this->fileWrite('/project/config/' . $site_id . '/.gitkeep', "");
+                $this->fs()->mkdir('/project/config/' . $site_id);
+                $this->fs()->dumpFile('/project/config/' . $site_id . '/.gitkeep', "");
 
                 // Create the default config directories if they don't already exist.
                 foreach (['config', 'hosted', 'local', 'production'] as $directory) {
                     $io->text('Creating default config directories');
-                    if (!!$this->fileExists('/project/config/' . $site_id . '/config/' . $directory)) {
+                    if (!!$this->fs()->exists('/project/config/' . $site_id . '/config/' . $directory)) {
                         $this->createDirectory('/project/config/' . $site_id . '/config/' . $directory);
                     }
                 }
@@ -215,7 +215,7 @@ class ProjectBuildCommand extends UnityShellCommand {
         // Attempt to write the YAML configuration files.
         foreach ($config_files as $file => $file_data) {
             try {
-                $this->fileWrite($file, $file_data[0]);
+                $this->fs()->dumpFile($file, $file_data[0]);
                 $io->success("Created $file_data[1] file");
             }
             catch (IOExceptionInterface $exception) {
@@ -225,7 +225,7 @@ class ProjectBuildCommand extends UnityShellCommand {
 
         // Copy Platform Solr server configuration.
         try {
-            $this->copy('/.hosting/platformsh/solr_config', '/.platform/solr_config');
+            $this->fs()->mirror('/.hosting/platformsh/solr_config', '/.platform/solr_config');
             $io->success('Successfully copied Solr server configuration');
         }
         catch (IOExceptionInterface $exception) {
@@ -233,7 +233,7 @@ class ProjectBuildCommand extends UnityShellCommand {
         }
 
         // Check for an .env file and copy example if missing.
-        if (!$this->fileExists('/.env')) {
+        if (!$this->fs()->exists('/.env')) {
             try {
                 $this->copy('/.env.sample', '/.env');
                 $io->success('Created local .env file');
@@ -244,12 +244,12 @@ class ProjectBuildCommand extends UnityShellCommand {
         }
 
         // Read .env file to check for some default Drupal environment settings.
-        $env_data = $this->fileRead('/.env');
+        $env_data = $this->fs()->readFile('/.env');
 
         if (empty($env_data['HASH_SALT'])) {
             if($io->confirm('Hash Salt was not found in the .env file. Would you like to add one?')) {
                 $env_data['HASH_SALT'] = str_replace(['+', '/', '=',], ['-', '_', '',], base64_encode(random_bytes(55)));
-                $this->fileWrite('/.env', $env_data);
+                $this->fs()->dumpFile('/.env', $env_data);
                 $io->success('Creating local site hash within .env file');
             }
         }
@@ -263,7 +263,7 @@ class ProjectBuildCommand extends UnityShellCommand {
         ];
 
         // Check for the vendor dir and add message to instructions.
-        if (!$this->fileExists('/vendor')) {
+        if (!$this->fs()->exists('/vendor')) {
             $post_build_instructions[] = "Run 'lando composer install' to install the project dependencies.";
         }
 
