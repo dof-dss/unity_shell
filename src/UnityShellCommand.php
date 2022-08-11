@@ -22,6 +22,11 @@ class UnityShellCommand extends Command {
         $this->fs = new FileSystemDecorator(new Filesystem());
     }
 
+    /**
+     * FileSystem getter.
+     *
+     * @return FileSystemDecorator
+     */
     public function fs() {
         return $this->fs;
     }
