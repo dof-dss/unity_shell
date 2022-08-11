@@ -7,33 +7,49 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Filesystem\Filesystem;
 
 #[AsCommand(
-    name: 'unity:shell',
-    description: 'Base command for Unity Shell',
-    hidden: true,
+  name: 'unity:shell',
+  description: 'Base command for Unity Shell',
+  hidden: TRUE,
 )]
+/**
+ * Base command class for Unity Shell commands.
+ */
 class UnityShellCommand extends Command {
 
-    protected static $defaultName = 'unity:shell';
-    private FileSystemDecorator $fs;
+  /**
+   * The Command name.
+   *
+   * @var string
+   */
+  protected static $defaultName = 'unity:shell';
 
-    /**
-     * UnityShellCommand constructor.
-     *
-     * @param string|null $name
-     */
-    public function __construct(string $name = null) {
-        parent::__construct($name);
+  /**
+   * The FileSystemDecorator.
+   *
+   * @var FileSystemDecorator
+   */
+  private FileSystemDecorator $fs;
 
-        $this->fs = new FileSystemDecorator(new Filesystem());
-    }
+  /**
+   * UnityShellCommand constructor.
+   *
+   * @param string|null $name
+   *   The application name.
+   */
+  public function __construct(string $name = NULL) {
+    parent::__construct($name);
 
-    /**
-     * FileSystemDecorator getter.
-     *
-     * @return FileSystemDecorator
-     */
-    public function fs() {
-        return $this->fs;
-    }
+    $this->fs = new FileSystemDecorator(new Filesystem());
+  }
+
+  /**
+   * FileSystemDecorator getter.
+   *
+   * @return FileSystemDecorator
+   *   The FileSystemDecorator.
+   */
+  public function fs() {
+    return $this->fs;
+  }
 
 }

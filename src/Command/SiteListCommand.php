@@ -10,30 +10,53 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;
 
 #[AsCommand(
-    name: 'site:list',
-    description: 'Display a list of sites for this project',
-    hidden: false,
-    aliases: ['sl']
+  name: 'site:list',
+  description: 'Display a list of sites for this project',
+  hidden: FALSE,
+  aliases: ['sl']
 )]
+/**
+ * Command to list sites witing a Unity2 project.
+ */
 class SiteListCommand extends UnityShellCommand {
 
-    protected function execute(InputInterface $input, OutputInterface $output): int {
-        $rows = [];
+  /**
+   * The command execution.
+   *
+   * @param \Symfony\Component\Console\Input\InputInterface $input
+   *   CLI input interface.
+   * @param \Symfony\Component\Console\Output\OutputInterface $output
+   *   CLI output interface.
+   *
+   * @return int
+   *   return 0 if command successful, non-zero for failure.
+   *
+   * @throws \Exception
+   */
+  protected function execute(InputInterface $input, OutputInterface $output): int {
+    $rows = [];
 
-        // Unity2 Project file.
-        $project = $this->fs()->readFile('/project/project.yml');
+    // Unity2 Project file.
+    $project = $this->fs()->readFile('/project/project.yml');
 
-        foreach ($project['sites'] as $site) {
-            $rows[] = [$site['name'], $site['url'], $site['database'], (empty($site['solr'])) ? 'No' : 'Yes', ($site['deploy']) ? 'Yes' : 'No'];
-        }
-
-        $table = new Table($output);
-        $table->setHeaderTitle($project['project_name'] . ' (' . $project['project_id'] . ')');
-        $table->setHeaders(['Name', 'URL', 'Database', 'Solr', 'Deployed'])
-            ->setRows($rows);
-        $table->render();
-
-        return Command::SUCCESS;
-
+    foreach ($project['sites'] as $site) {
+      $rows[] = [
+        $site['name'],
+        $site['url'],
+        $site['database'],
+        (empty($site['solr'])) ? 'No' : 'Yes',
+        ($site['deploy']) ? 'Yes' : 'No',
+      ];
     }
+
+    $table = new Table($output);
+    $table->setHeaderTitle($project['project_name'] . ' (' . $project['project_id'] . ')');
+    $table->setHeaders(['Name', 'URL', 'Database', 'Solr', 'Deployed'])
+      ->setRows($rows);
+    $table->render();
+
+    return Command::SUCCESS;
+
+  }
+
 }
