@@ -151,7 +151,7 @@ class ProjectBuildCommand extends UnityShellCommand {
 
             // Enable our multisite entry by linking from the sites dir to the project dir.
             try {
-                $this->fs()->symlink('/app/project/sites/' . $site_id, 'web/sites/' . $site_id);
+                $this->fs()->symlink('//app/project/sites/' . $site_id, '/web/sites/' . $site_id);
                 $io->text('Linking sites directory');
             } catch (IOExceptionInterface $exception) {
                 $io->error("An error occurred while linking $site_id site directory: " . $exception->getMessage());

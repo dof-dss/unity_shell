@@ -30,7 +30,12 @@ class FileSystemDecorator {
         // Pretty basic way to determine if the arg is a file/dir path.
         // Could do with a lot of improvement.
         foreach ($args as $index => $val) {
-            if (is_string($val) && str_starts_with($val, '/')) {
+            // If a path starts with a double slash, do not prepend the
+            // project root path and remove the leading slash.
+            if (is_string($val) && str_starts_with($val, '//')) {
+                $args[$index] = substr($val, 1, strlen($val));
+            }
+            else if (is_string($val) && str_starts_with($val, '/')) {
                 $args[$index] = $this->projectRoot . $val;
             }
         }
