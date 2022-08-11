@@ -16,6 +16,11 @@ class UnityShellCommand extends Command {
     protected static $defaultName = 'unity:shell';
     private FileSystemDecorator $fs;
 
+    /**
+     * UnityShellCommand constructor.
+     *
+     * @param string|null $name
+     */
     public function __construct(string $name = null) {
         parent::__construct($name);
 
@@ -23,7 +28,7 @@ class UnityShellCommand extends Command {
     }
 
     /**
-     * FileSystem getter.
+     * FileSystemDecorator getter.
      *
      * @return FileSystemDecorator
      */

@@ -12,12 +12,23 @@ use Symfony\Component\Yaml\Yaml;
  * custom methods for reading and writing files.
  *
  * See: https://symfony.com/doc/current/components/filesystem.html
+ *
+ * By default paths passed to these methods will be prefixed with the project
+ * root path. If you require an absolute path you should start the path with
+ * a double slash (e.g. //app/project/sites).
+ *
  */
 class FileSystemDecorator {
 
     protected $fs;
     protected string $projectRoot;
 
+    /**
+     * FileSystemDecorator constructor.
+     *
+     * @param $file_system
+     *   Filesystem component.
+     */
     public function __construct($file_system) {
         $this->fs = $file_system;
 
@@ -26,6 +37,14 @@ class FileSystemDecorator {
         $this->projectRoot = $drupalFinder->getComposerRoot();
     }
 
+    /**
+     * Magic method to process calls before passing on.
+     *
+     * @param $method
+     * @param $args
+     * @return array|false|mixed|string|null
+     * @throws \Exception
+     */
     public function __call($method, $args) {
         // Pretty basic way to determine if the arg is a file/dir path.
         // Could do with a lot of improvement.
@@ -57,7 +76,6 @@ class FileSystemDecorator {
     /**
      * Read and parse contents of multiple file types.
      *
-     * @param $file_path
      * @param $file_path
      * @return array|false|mixed|string|null
      */
