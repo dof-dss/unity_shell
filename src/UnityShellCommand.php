@@ -18,20 +18,16 @@ class UnityShellCommand extends Command {
     protected static $defaultName = 'unity:shell';
 
     private string $projectRoot;
-    private Filesystem $fs;
+    private FileSystemDecorator $fs;
 
     public function __construct(string $name = null) {
         parent::__construct($name);
 
-        $this->fs = new Filesystem();
-
-        $drupalFinder = new DrupalFinder();
-        $drupalFinder->locateRoot(getcwd());
-        $this->projectRoot = $drupalFinder->getComposerRoot();
+        $this->fs = new FileSystemDecorator(new Filesystem());
     }
 
-    public function rootPath() {
-        return $this->projectRoot;
+    public function fs() {
+        return $this->fs;
     }
 
     /** Check for the existence of a file or directory.
@@ -43,27 +39,7 @@ class UnityShellCommand extends Command {
         return $this->fs->exists($this->rootPath() . $file_path);
     }
 
-    /**
-     * Read and parse contents of multiple file types.
-     *
-     * @param $file_path
-     * @return array|false|mixed|string|null
-     */
-    public function fileRead($file_path) {
-        if (!$this->fileExists($file_path)) {
-            return null;
-        }
 
-        switch (pathinfo($file_path, PATHINFO_EXTENSION)) {
-            case 'yaml':
-            case 'yml':
-                return Yaml::parseFile($this->rootPath() . $file_path);
-            case 'env':
-                return (array) parse_ini_file($this->rootPath() . $file_path);
-            default:
-                return file_get_contents($this->rootPath() . $file_path);
-        }
-    }
 
     /**
      * Write content to a file.
@@ -78,14 +54,6 @@ class UnityShellCommand extends Command {
         $this->fs->dumpFile($this->rootPath() . $file_path, $contents);
     }
 
-    /**
-     * Create a directory.
-     *
-     * @param $path
-     */
-    public function createDirectory($path) {
-        $this->fs->mkdir($this->rootPath() . $path);
-    }
 
     /**
      * Copy a file or directory.
@@ -120,24 +88,6 @@ class UnityShellCommand extends Command {
         return $this->fs;
     }
 
-    /**
-     * @param $data
-     *  Array of data to be written.
-     * @param $i
-     *  ini file index.
-     * @return string
-     */
-    private function writeIniFile(array $data, $i = 0){
-        $str="";
-        foreach ($data as $key => $val){
-            if (is_array($val)) {
-                $str.=str_repeat(" ",$i*2)."[$key]".PHP_EOL;
-                $str.= $this->writeIniFile($val, $i+1);
-            } else {
-                $str.=str_repeat(" ",$i*2)."$key = $val".PHP_EOL;
-            }
-        }
-        return $str;
-    }
+
 
 }

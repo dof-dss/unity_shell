@@ -35,7 +35,7 @@ class ProjectBuildCommand extends UnityShellCommand {
         // - Download Platform databases.
 
         // Check we are running in the root of a Unity repo and have a project file.
-        if (!$this->fileExists('/project/project.yml')) {
+        if (!$this->fs()->exists('/project/project.yml')) {
             $io->error('Please ensure you are in the root of a Unity project and that project/project.yml exists before running this command.');
             return Command::FAILURE;
         }
