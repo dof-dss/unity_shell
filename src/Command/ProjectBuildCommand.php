@@ -50,11 +50,14 @@ class ProjectBuildCommand extends UnityShellCommand {
 
     // @todo Spin most of this code out into separate functions or services
     // and remove all these todo's.
+    // - Have each hosting option (PSH, Lando) as a service implementing a host
+    //   interface and responsible for generating configuration for that host.
+    //   Register the required services into a repository for processing by
+    //   the build command.
     // - Display notice when a site is removed and there are files in the
     //   project/site_id folder
     // - Remove all config if an entry is removed from project.yml.
     // - Improve error handling.
-    // - Download Platform databases.
     // Check we are running in the root of a Unity repo and have a project file.
     if (!$this->fs()->exists('/project/project.yml')) {
       $io->error('Please ensure you are in the root of a Unity project and that project/project.yml exists before running this command.');
