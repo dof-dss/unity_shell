@@ -29,7 +29,6 @@ class SiteListCommand extends UnityShellCommand {
             $rows[] = [$site['name'], $site['url'], $site['database'], (empty($site['solr'])) ? 'No' : 'Yes', ($site['deploy']) ? 'Yes' : 'No'];
         }
 
-
         $table = new Table($output);
         $table->setHeaderTitle($project['project_name'] . ' (' . $project['project_id'] . ')');
         $table->setHeaders(['Name', 'URL', 'Database', 'Solr', 'Deployed'])
