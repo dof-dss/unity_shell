@@ -45,8 +45,6 @@ class ProjectBuildCommand extends UnityShellCommand {
   protected function execute(InputInterface $input, OutputInterface $output): int {
     $io = new SymfonyStyle($input, $output);
     $solr_required = FALSE;
-    // List of deployed PlatformSH sites.
-    $deployed_sites = [];
 
     // @todo Spin most of this code out into separate functions or services
     // and remove all these todo's.
@@ -91,14 +89,7 @@ class ProjectBuildCommand extends UnityShellCommand {
       $io->text('Lando: proxy entry');
       $lando['proxy']['appserver'][] = $site['url'] . '.lndo.site';
 
-      // Create deployment list.
-      if ($site['deploy'] === TRUE) {
-        $io->text('Platform: deploy site, TRUE');
-        $deployed_sites[] = $site_id;
-      }
-      else {
-        $io->text('Platform: deploy site, FALSE');
-      }
+      $io->text('Platform: site status, ' . $site['status']);
 
       // Create database relationship.
       if (!empty($site['database'])) {
@@ -151,7 +142,7 @@ class ProjectBuildCommand extends UnityShellCommand {
         $platform['crons'][$site_id]['cmd'] = $site['cron_cmd'];
       }
 
-      if (!(bool) ($site['deploy'])) {
+      if ($site['status'] !== 'production') {
         // Create Platform SH route.
         $platform_routes['https://www.' . $site['url'] . '/'] = [
           'type' => 'upstream',
@@ -203,7 +194,7 @@ class ProjectBuildCommand extends UnityShellCommand {
 
     // Update platform post deploy hook with list of deployed sites.
     $io->text('Updating Platform post-deploy hook');
-    $platform['hooks']['post_deploy'] = str_replace('<deployed_sites_placeholder>', implode(' ', $deployed_sites), $platform['hooks']['post_deploy']);
+    $platform['hooks']['post_deploy'] = str_replace('<deployed_sites_placeholder>', implode(' ', $production_sites), $platform['hooks']['post_deploy']);
 
     // Add 'Catch all' to PlatformSH routing.
     $io->text("Adding 'Catch all' to Platform routes.");
