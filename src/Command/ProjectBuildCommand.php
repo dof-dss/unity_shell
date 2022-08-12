@@ -60,7 +60,7 @@ class ProjectBuildCommand extends UnityShellCommand {
     // - Improve error handling.
     // Check we are running in the root of a Unity repo and have a project file.
     if (!$this->fs()->exists('/project/project.yml')) {
-      $io->error('Please ensure you are in the root of a Unity project and that project/project.yml exists before running this command.');
+      $io->error('Please ensure you are in a Unity project and that project/project.yml exists before running this command.');
       return Command::FAILURE;
     }
 
