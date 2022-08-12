@@ -192,9 +192,9 @@ class ProjectBuildCommand extends UnityShellCommand {
       }
     }
 
-    // Update platform post deploy hook with list of deployed sites.
+    // Update platform post deploy hook with list of sites.
     $io->text('Updating Platform post-deploy hook');
-    $platform['hooks']['post_deploy'] = str_replace('<deployed_sites_placeholder>', implode(' ', $production_sites), $platform['hooks']['post_deploy']);
+    $platform['hooks']['post_deploy'] = str_replace('<sites_placeholder>', implode(' ', array_keys($project['sites'])), $platform['hooks']['post_deploy']);
 
     // Add 'Catch all' to PlatformSH routing.
     $io->text("Adding 'Catch all' to Platform routes.");
