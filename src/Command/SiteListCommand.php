@@ -5,6 +5,8 @@ namespace App\Command;
 use App\UnityShellCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\TableCell;
+use Symfony\Component\Console\Helper\TableCellStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;
@@ -39,24 +41,40 @@ class SiteListCommand extends UnityShellCommand {
     // Unity2 Project file.
     $project = $this->fs()->readFile('/project/project.yml');
 
+    $cell_green = new TableCellStyle([
+      'fg' => 'black',
+      'bg' => 'green',
+    ]);
+    $cell_yellow = new TableCellStyle([
+      'fg' => 'black',
+      'bg' => 'yellow',
+    ]);
+
     foreach ($project['sites'] as $site) {
+
+      if ($site['status'] === 'production') {
+        $status = new TableCell($site['status'], ['style' => $cell_green]);
+      } else {
+        $status = new TableCell($site['status'], ['style' => $cell_yellow]);
+      }
+
       $rows[] = [
         $site['name'],
         $site['url'],
         $site['database'],
         (empty($site['solr'])) ? 'No' : 'Yes',
-        ($site['deploy']) ? 'Yes' : 'No',
+        $status,
       ];
     }
 
     $table = new Table($output);
+    $table->setStyle('box-double');
     $table->setHeaderTitle($project['project_name'] . ' (' . $project['project_id'] . ')');
-    $table->setHeaders(['Name', 'URL', 'Database', 'Solr', 'Deployed'])
+    $table->setHeaders(['Name', 'URL', 'Database', 'Solr', 'Status'])
       ->setRows($rows);
     $table->render();
 
     return Command::SUCCESS;
-
   }
 
 }
