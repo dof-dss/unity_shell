@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;
 
 #[AsCommand(
-  name: 'unity:drush',
+  name: 'drush',
   description: 'Run drush from within a Unity project',
   hidden: FALSE,
   aliases: ['drh']
@@ -37,11 +37,18 @@ class DrushCommand extends UnityShellCommand {
 
     // Unity2 Project file.
     $project = $this->fs()->readFile('/project/project.yml');
+    $sites = $project['sites'];
 
+    // Current path within the scope of the project
+    $current_project_path = substr(getcwd(), strlen($this->fs()->projectRoot()));
 
+    // Look at each directory and try to match against a site id.
+    foreach (explode('/', $current_project_path) as $directory) {
+      if (array_key_exists($directory, $sites)) {
+      }
+    }
 
     return Command::SUCCESS;
-
   }
 
 }

@@ -135,6 +135,10 @@ class FileSystemDecorator {
     $this->fs->dumpFile($file_path, $contents);
   }
 
+  public function projectRoot() {
+    return $this->projectRoot;
+  }
+
   /**
    * Format data into ini style data.
    *
