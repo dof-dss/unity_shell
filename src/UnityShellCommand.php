@@ -24,6 +24,21 @@ class UnityShellCommand extends Command {
   protected static $defaultName = 'unity:shell';
 
   /**
+   * The site development status.
+   *
+   * @var array|string[]
+   */
+  protected array $site_status = [
+    'development',
+    'production'
+  ];
+
+  protected const SITE_STATUS = [
+    'development',
+    'production',
+  ];
+
+  /**
    * The FileSystemDecorator.
    *
    * @var FileSystemDecorator

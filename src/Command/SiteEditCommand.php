@@ -91,11 +91,18 @@ class SiteEditCommand extends UnityShellCommand {
       $site['cron_cmd'] = 'cd web/sites/' . $site_id . ' ; drush core-cron';
 
       $site['database'] = $site_id;
-      $site['deploy'] = FALSE;
 
-      if ($io->confirm('Do you want this project deployed live on Platform?', array_key_exists('solr', $project['sites'][$site_id]))) {
-        $site['deploy'] = TRUE;
-      }
+      $helper = $this->getHelper('question');
+      $site_status_list = new ChoiceQuestion(
+        'Please select the site status',
+        self::SITE_STATUS,
+        0
+      );
+
+      $site_status_list->setErrorMessage('Status %s is invalid.');
+
+      $site_status = $helper->ask($input, $output, $site_status_list);
+      $site['status'] = $site_status;
 
       $project['sites'][$site_id] = $site;
 
