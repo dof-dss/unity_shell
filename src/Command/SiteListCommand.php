@@ -54,7 +54,8 @@ class SiteListCommand extends UnityShellCommand {
 
       if ($site['status'] === 'production') {
         $status = new TableCell($site['status'], ['style' => $cell_green]);
-      } else {
+      }
+      else {
         $status = new TableCell($site['status'], ['style' => $cell_yellow]);
       }
 
