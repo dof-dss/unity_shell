@@ -45,8 +45,6 @@ class ProjectBuildCommand extends UnityShellCommand {
   protected function execute(InputInterface $input, OutputInterface $output): int {
     $io = new SymfonyStyle($input, $output);
     $solr_required = FALSE;
-    // List of deployed PlatformSH sites.
-    $deployed_sites = [];
 
     // @todo Spin most of this code out into separate functions or services
     // and remove all these todo's.
@@ -60,7 +58,7 @@ class ProjectBuildCommand extends UnityShellCommand {
     // - Improve error handling.
     // Check we are running in the root of a Unity repo and have a project file.
     if (!$this->fs()->exists('/project/project.yml')) {
-      $io->error('Please ensure you are in the root of a Unity project and that project/project.yml exists before running this command.');
+      $io->error('Please ensure you are in a Unity project and that project/project.yml exists before running this command.');
       return Command::FAILURE;
     }
 
@@ -91,14 +89,7 @@ class ProjectBuildCommand extends UnityShellCommand {
       $io->text('Lando: proxy entry');
       $lando['proxy']['appserver'][] = $site['url'] . '.lndo.site';
 
-      // Create deployment list.
-      if ($site['deploy'] === TRUE) {
-        $io->text('Platform: deploy site, TRUE');
-        $deployed_sites[] = $site_id;
-      }
-      else {
-        $io->text('Platform: deploy site, FALSE');
-      }
+      $io->text('Platform: site status, ' . $site['status']);
 
       // Create database relationship.
       if (!empty($site['database'])) {
@@ -151,7 +142,7 @@ class ProjectBuildCommand extends UnityShellCommand {
         $platform['crons'][$site_id]['cmd'] = $site['cron_cmd'];
       }
 
-      if (!(bool) ($site['deploy'])) {
+      if ($site['status'] !== 'production') {
         // Create Platform SH route.
         $platform_routes['https://www.' . $site['url'] . '/'] = [
           'type' => 'upstream',
@@ -194,16 +185,18 @@ class ProjectBuildCommand extends UnityShellCommand {
         // Create the default config directories if they don't already exist.
         foreach (['config', 'hosted', 'local', 'production'] as $directory) {
           $io->text('Creating default config directories');
-          if (!!$this->fs()->exists('/project/config/' . $site_id . '/config/' . $directory)) {
-            $this->createDirectory('/project/config/' . $site_id . '/config/' . $directory);
+          if (!!$this->fs()->exists('/project/config/' . $site_id . '/' . $directory)) {
+            $this->createDirectory('/project/config/' . $site_id . '/' . $directory);
           }
         }
       }
     }
 
-    // Update platform post deploy hook with list of deployed sites.
-    $io->text('Updating Platform post-deploy hook');
-    $platform['hooks']['post_deploy'] = str_replace('<deployed_sites_placeholder>', implode(' ', $deployed_sites), $platform['hooks']['post_deploy']);
+    $io->section('Creating hosting configuration.');
+
+    // Update platform post deploy hook with list of sites.
+    $io->text('Updating Platform post-deploy hook.');
+    $platform['hooks']['post_deploy'] = str_replace('<sites_placeholder>', implode(' ', array_keys($project['sites'])), $platform['hooks']['post_deploy']);
 
     // Add 'Catch all' to PlatformSH routing.
     $io->text("Adding 'Catch all' to Platform routes.");

@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Yaml\Yaml;
@@ -72,11 +73,18 @@ class SiteAddCommand extends UnityShellCommand {
     $site['cron_cmd'] = 'cd web/sites/' . $site_id . ' ; drush core-cron';
 
     $site['database'] = $site_id;
-    $site['deploy'] = FALSE;
 
-    if ($io->confirm('Do you want this project deployed live on Platform?')) {
-      $site['deploy'] = TRUE;
-    }
+    $helper = $this->getHelper('question');
+    $site_status_list = new ChoiceQuestion(
+      'Please select the site status',
+      self::SITE_STATUS,
+      0
+    );
+
+    $site_status_list->setErrorMessage('Status %s is invalid.');
+
+    $site_status = $helper->ask($input, $output, $site_status_list);
+    $site['status'] = $site_status;
 
     $project['sites'][$site_id] = $site;
 
