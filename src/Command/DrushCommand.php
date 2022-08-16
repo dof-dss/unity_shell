@@ -3,12 +3,14 @@
 namespace App\Command;
 
 use App\UnityShellCommand;
+use DrupalFinder\DrupalFinder;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ExecutableFinder;
 
 #[AsCommand(
   name: 'drush',
@@ -59,11 +61,19 @@ class DrushCommand extends UnityShellCommand {
       }
     }
 
+    $command[] = 'lando';
+    $command[] = 'drush';
     $command[] = $input->getArgument('cmd');
     $command[] .= ($input->hasOption('uri')) ? '-l ' . $input->getOption('uri') : '';
 
     $process = new Process($command);
-    $process->start();
+    $process->run(function ($type, $buffer) {
+      if (Process::ERR === $type) {
+        echo 'ERR > '.$buffer;
+      } else {
+        echo 'OUT > '.$buffer;
+      }
+    });
 
     return Command::SUCCESS;
   }
