@@ -5,20 +5,28 @@ namespace App\Command;
 use App\UnityShellCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Process\Process;
 
 #[AsCommand(
   name: 'drush',
   description: 'Run drush from within a Unity project',
   hidden: FALSE,
-  aliases: ['drh']
+  aliases: ['dr']
 )]
 /**
  * Command to run drush within a Unity2 project.
  */
 class DrushCommand extends UnityShellCommand {
+
+  protected function configure() {
+    $this->ignoreValidationErrors();
+
+    $this->addArgument('cmd', InputArgument::REQUIRED, 'Drush command');
+    $this->addOption('uri', 'l', InputArgument::OPTIONAL, "Site URI");
+  }
 
   /**
    * The command execution.
@@ -42,11 +50,20 @@ class DrushCommand extends UnityShellCommand {
     // Current path within the scope of the project
     $current_project_path = substr(getcwd(), strlen($this->fs()->projectRoot()));
 
-    // Look at each directory and try to match against a site id.
-    foreach (explode('/', $current_project_path) as $directory) {
-      if (array_key_exists($directory, $sites)) {
+    if (empty($input->getOption('uri'))) {
+      // Look at each directory and try to match against a site id.
+      foreach (explode('/', $current_project_path) as $directory) {
+        if (array_key_exists($directory, $sites)) {
+          $input->setOption('uri', $directory);
+        }
       }
     }
+
+    $command[] = $input->getArgument('cmd');
+    $command[] .= ($input->hasOption('uri')) ? '-l ' . $input->getOption('uri') : '';
+
+    $process = new Process($command);
+    $process->start();
 
     return Command::SUCCESS;
   }
