@@ -1,6 +1,15 @@
 {
+    "name": "dof-dss/unity_shell",
+    "description": "Shell for managing DoF-DSS Unity projects.",
     "type": "project",
     "license": "proprietary",
+    "authors": [
+        {
+            "name": "Stephen Cousins",
+            "email": "hello@onemanandhismouse.com",
+            "role": "Developer"
+        }
+    ],
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
