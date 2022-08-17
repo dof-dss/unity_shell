@@ -47,6 +47,9 @@
             "App\\Tests\\": "tests/"
         }
     },
+    "bin": [
+        "bin/unitysh"
+    ],
     "replace": {
         "symfony/polyfill-ctype": "*",
         "symfony/polyfill-iconv": "*",
