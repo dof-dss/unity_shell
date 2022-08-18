@@ -185,8 +185,8 @@ class ProjectBuildCommand extends UnityShellCommand {
         // Create the default config directories if they don't already exist.
         foreach (['config', 'hosted', 'local', 'production'] as $directory) {
           $io->text('Creating default config directories');
-          if (!!$this->fs()->exists('/project/config/' . $site_id . '/' . $directory)) {
-            $this->createDirectory('/project/config/' . $site_id . '/' . $directory);
+          if (!$this->fs()->exists('/project/config/' . $site_id . '/' . $directory)) {
+            $this->fs()->mkdir('/project/config/' . $site_id . '/' . $directory);
           }
         }
       }
