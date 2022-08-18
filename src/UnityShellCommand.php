@@ -32,6 +32,18 @@ class UnityShellCommand extends Command {
   ];
 
   /**
+   * Banner to inform the user that an update is available.
+   */
+  private string $update_banner = <<<BANNER
+ /\ /\ _ __   __| | __ _| |_ ___    /_\__   ____ _(_) | __ _| |__ | | ___  / \
+/ / \ \ '_ \ / _` |/ _` | __/ _ \  //_\\ \ / / _` | | |/ _` | '_ \| |/ _ \/  /
+\ \_/ / |_) | (_| | (_| | ||  __/ /  _  \ V / (_| | | | (_| | |_) | |  __/\_/ 
+ \___/| .__/ \__,_|\__,_|\__\___| \_/ \_/\_/ \__,_|_|_|\__,_|_.__/|_|\___\/   
+      |_|                                                                     
+BANNER;
+
+
+  /**
    * The FileSystemDecorator.
    *
    * @var FileSystemDecorator
@@ -46,6 +58,9 @@ class UnityShellCommand extends Command {
    */
   public function __construct(string $name = NULL) {
     parent::__construct($name);
+
+    // @todo Check current version against latest release and cache the response.
+    $version = \Composer\InstalledVersions::getVersion('symfony/console');
 
     $this->fs = new FileSystemDecorator(new Filesystem());
   }
