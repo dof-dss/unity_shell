@@ -2,6 +2,9 @@
 
 namespace UnityShell\Command;
 
+use Exception;
+use RomaricDrigon\MetaYaml\Loader\YamlLoader;
+use RomaricDrigon\MetaYaml\MetaYaml;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -56,10 +59,21 @@ class ProjectBuildCommand extends Command {
       return Command::FAILURE;
     }
 
-    $io->title('Building host environment');
-
     // Unity2 Project file.
     $project = $this->fs()->readFile('/project/project.yml');
+
+    $yaml_loader = new YamlLoader();
+    $schema_data = $yaml_loader->loadFromFile(UNITYSH_ROOT . '/resources/schemas/unity_project.yml');
+    $schema = new MetaYaml($schema_data);
+
+    try {
+      $schema->validate($project);
+    } catch (Exception $exception) {
+      $io->error("Project file is invalid. " . $exception->getMessage());
+      return Command::FAILURE;
+    }
+
+    $io->title('Building host environment');
 
     // Platform SH specific configuration.
     $platform = $this->fs()->readFile('/.hosting/platformsh/.platform.app.template.yaml');

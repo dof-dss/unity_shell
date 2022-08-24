@@ -1,0 +1,46 @@
+root:
+  _type: array
+  _children:
+    project_name:
+      _type: text
+      _not_empty: true
+      _required: true
+    project_id:
+      _type: text
+      _not_empty: true
+      _required: true
+    sites:
+      _type: prototype
+      _prototype:
+        _type: array
+        _children:
+          name:
+            _type: text
+            _not_empty: true
+            _required: true
+          url:
+            _type: text
+            _not_empty: true
+            _required: true
+          solr:
+            _type: text
+            _not_empty: true
+          cron_spec:
+            _type: text
+            _not_empty: true
+            _required: true
+          cron_cmd:
+            _type: text
+            _not_empty: true
+            _required: true
+          database:
+            _type: text
+            _not_empty: true
+            _required: true
+          status:
+             _type: enum
+             _not_empty: true
+             _required: true
+             _values:
+              - development
+              - production
