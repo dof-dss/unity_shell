@@ -2,6 +2,7 @@
 
 namespace UnityShell;
 
+use Stecman\Component\Symfony\Console\BashCompletion\CompletionCommand;
 use Symfony\Component\Console\Application as ParentApplication;
 use UnityShell\Command\ProjectBuildCommand;
 use UnityShell\Command\ProjectCreateCommand;
@@ -24,6 +25,7 @@ class Application extends ParentApplication {
     parent::__construct("Unity Shell", "2.0.0");
 
     $this->addCommands([
+      new CompletionCommand(),
       new ProjectBuildCommand(),
       new ProjectCreateCommand(),
       new ProjectInfoCommand(),

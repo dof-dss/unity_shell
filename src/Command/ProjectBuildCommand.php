@@ -253,7 +253,7 @@ class ProjectBuildCommand extends Command {
     // Check for an .env file and copy example if missing.
     if (!$this->fs()->exists('/.env')) {
       try {
-        $this->copy('/.env.sample', '/.env');
+        $this->fs()->copy('/.env.sample', '/.env');
         $io->success('Created local .env file');
       }
       catch (IOExceptionInterface $exception) {

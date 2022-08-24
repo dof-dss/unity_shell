@@ -61,6 +61,11 @@ first part with the path to the repo)
 export PATH="/<YOUR PATH TO UNITY SHELL>/bin:$PATH"
 ```
 
+Command autocompletion can be added by running
+```shell
+source <(unitysh _completion --generate-hook)
+```
+
 Once saved you will need to run 
 ```shell
 source ~/.zshrc
