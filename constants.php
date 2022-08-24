@@ -4,5 +4,5 @@
  * Constants used throughout the CLI.
  */
 
-// Root of this CLI instance.
-define('CLI_ROOT', __DIR__);
+// Root of this Shell instance.
+define('UNITYSH_ROOT', __DIR__);
