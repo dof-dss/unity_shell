@@ -1,0 +1,34 @@
+{
+  "directories": [
+    "bin",
+    "src"
+  ],
+  "files": [
+    "constants.php",
+    "vendor/autoload.php"
+  ],
+  "finder": [
+    {
+      "in": "vendor",
+      "name": "*.php*",
+      "exclude": [
+        "README",
+        "CHANGELOG",
+        "LICENSE",
+        ".editorconfig",
+        "bin",
+        "doc",
+        "build",
+        "phpunit",
+        "test",
+        "tests",
+        "Tests"
+      ]
+    }
+  ],
+  "output": "build/unitysh.phar",
+  "compactors": [
+    "KevinGH\\Box\\Compactor\\Json",
+    "KevinGH\\Box\\Compactor\\Php"
+  ]
+}
