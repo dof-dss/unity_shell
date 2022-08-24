@@ -1,7 +1,8 @@
 <?php
+
 /**
  * @file
- * Constants used throughout the CLI.
+ * Constants used throughout Unity Shell.
  */
 
 // Root of this Shell instance.
