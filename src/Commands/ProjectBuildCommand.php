@@ -1,6 +1,6 @@
 <?php
 
-namespace UnityShell\Command;
+namespace UnityShell\Commands;
 
 use Exception;
 use RomaricDrigon\MetaYaml\Loader\YamlLoader;
@@ -40,6 +40,7 @@ class ProjectBuildCommand extends Command {
    * @throws \Exception
    */
   protected function execute(InputInterface $input, OutputInterface $output): int {
+
     $io = new SymfonyStyle($input, $output);
     $solr_required = FALSE;
 
@@ -62,6 +63,7 @@ class ProjectBuildCommand extends Command {
     // Unity2 Project file.
     $project = $this->fs()->readFile('/project/project.yml');
 
+    // Validate Project file.
     $yaml_loader = new YamlLoader();
     $schema_data = $yaml_loader->loadFromFile(UNITYSH_ROOT . '/resources/schemas/unity_project.yml');
     $schema = new MetaYaml($schema_data);

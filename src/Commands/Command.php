@@ -1,6 +1,6 @@
 <?php
 
-namespace UnityShell\Command;
+namespace UnityShell\Commands;
 
 use Symfony\Component\Console\Command\Command as ConsoleCommand;
 use Symfony\Component\Console\Input\InputInterface;

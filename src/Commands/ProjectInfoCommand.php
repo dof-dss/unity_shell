@@ -1,6 +1,6 @@
 <?php
 
-namespace UnityShell\Command;
+namespace UnityShell\Commands;
 
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;

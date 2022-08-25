@@ -1,6 +1,6 @@
 <?php
 
-namespace UnityShell\Command;
+namespace UnityShell\Commands;
 
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,17 +12,17 @@ use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
 /**
- * Command to remove a site to a Unity2 project.
+ * Command to edit a site within a Unity2 project.
  */
-class SiteRemoveCommand extends Command {
+class SiteEditCommand extends Command {
 
   /**
    * Defines configuration options for this command.
    */
   protected function configure(): void {
-    $this->setName('site:remove');
-    $this->setDescription('Remove a site from the project');
-    $this->setAliases(['sr']);
+    $this->setName('site:edit');
+    $this->setDescription('Edit a site in the project');
+    $this->setAliases(['se']);
 
     $this->addArgument('siteid', InputArgument::OPTIONAL, 'Site ID (Must be a machine name e.g. uregni)');
   }
@@ -61,7 +61,7 @@ class SiteRemoveCommand extends Command {
 
       $helper = $this->getHelper('question');
       $sites_choice_list = new ChoiceQuestion(
-        'Please select a site to remove',
+        'Please select a site to edit',
         $site_options,
         0
       );
@@ -70,45 +70,63 @@ class SiteRemoveCommand extends Command {
       $site_id = $helper->ask($input, $output, $sites_choice_list);
 
       if ($site_id === 'Cancel') {
-        $io->info('Cancelling site removal.');
+        $io->info('Cancelling site edit.');
         return Command::SUCCESS;
       }
     }
 
     if (array_key_exists($site_id, $project['sites'])) {
-      unset($project['sites'][$site_id]);
+      $site['name'] = $io->ask('Site name', $project['sites'][$site_id]['name']);
+      $site['url'] = $io->ask('Site URL (minus the protocol and trailing slash', $project['sites'][$site_id]['url']);
+      if ($io->confirm('Does this site require a Solr search?')) {
+        $site['solr'] = $site_id;
+      }
+
+      $site['cron_spec'] = '10 * * * *';
+      $site['cron_cmd'] = 'cd web/sites/' . $site_id . ' ; drush core-cron';
+
+      $site['database'] = $site_id;
+
+      $helper = $this->getHelper('question');
+      $site_status_list = new ChoiceQuestion(
+        'Please select the site status',
+        self::SITE_STATUS,
+        0
+      );
+
+      $site_status_list->setErrorMessage('Status %s is invalid.');
+
+      $site_status = $helper->ask($input, $output, $site_status_list);
+      $site['status'] = $site_status;
+
+      $project['sites'][$site_id] = $site;
 
       $project_config = Yaml::dump($project, 6);
 
       try {
         $this->fs()->dumpFile('/project/project.yml', $project_config);
+        $io->success('Updated project file');
 
-        // Remove the site symlink. This should be done in the
-        // project:build command but that would involve checking all
-        // symlinks under /web/sites and removing those that don't match
-        // a site id, not ideal so we remove it here.
-        $this->fs()->remove('/web/sites/' . $site_id);
+        $io->section('Site details for: ' . $site_id);
+        foreach ($site as $property => $value) {
+          $io->writeln($property . ' : ' . $value);
+        }
 
-        $io->success('Successfully removed ' . $site_id . ' from the project.');
-        $io->info("NOTE: Existing project assets (modules, theme, config etc) will remain in the project folder and these should be removed if the site is no longer required.");
+        if ($io->confirm('Would you like to rebuild the project?')) {
+          $build_command = $this->getApplication()->find('project:build');
+
+          $return_code = $build_command->run(new ArrayInput([]), $output);
+          return $return_code;
+        }
+
+        $io->success('Successfully added ' . $site_id . ' to the project.');
+        return Command::SUCCESS;
       }
       catch (IOExceptionInterface $exception) {
         $io->error('Unable to update Project file, error: ' . $exception->getMessage());
         return Command::FAILURE;
       }
-
-      if ($io->confirm('Would you like to rebuild the project?')) {
-        $build_command = $this->getApplication()->find('project:build');
-
-        $return_code = $build_command->run(new ArrayInput([]), $output);
-        return $return_code;
-      }
-
-      $io->success('Successfully removed ' . $site_id . ' from the project.');
-      return Command::SUCCESS;
     }
-
-    $io->error('Site ' . $site_id . ' not found within Projects file.');
     return Command::FAILURE;
   }
 

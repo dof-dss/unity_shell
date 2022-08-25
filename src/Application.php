@@ -4,12 +4,13 @@ namespace UnityShell;
 
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionCommand;
 use Symfony\Component\Console\Application as ParentApplication;
-use UnityShell\Command\ProjectBuildCommand;
-use UnityShell\Command\ProjectCreateCommand;
-use UnityShell\Command\ProjectInfoCommand;
-use UnityShell\Command\SiteAddCommand;
-use UnityShell\Command\SiteEditCommand;
-use UnityShell\Command\SiteRemoveCommand;
+use UnityShell\Commands\ProjectBuildCommand;
+use UnityShell\Commands\ProjectCreateCommand;
+use UnityShell\Commands\ProjectInfoCommand;
+use UnityShell\Commands\SiteAddCommand;
+use UnityShell\Commands\SiteEditCommand;
+use UnityShell\Commands\SiteRemoveCommand;
+use UnityShell\Commands\TestCommand;
 
 /**
  * Unity Shell Application.
