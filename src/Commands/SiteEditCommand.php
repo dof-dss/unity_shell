@@ -2,13 +2,12 @@
 
 namespace UnityShell\Commands;
 
+use InvalidArgumentException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
-use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
 /**
@@ -45,19 +44,12 @@ class SiteEditCommand extends Command {
 
     $site_id = $input->getArgument('siteid');
 
-    // Unity2 Project file.
-    $project = $this->fs()->readFile('/project/project.yml');
-
-    // Warn if we have no site entries.
-    if (empty($project['sites'])) {
-      $io->error('This project does not have any site definitions.');
-      return Command::FAILURE;
-    }
+    // @todo Warn if we have no site entries.
 
     // Provide a list of sites from the project file for the user to select.
     if (empty($site_id)) {
       $site_options = ['Cancel'];
-      $site_options = array_merge($site_options, array_keys($project['sites']));
+      $site_options = array_merge($site_options, array_keys($this->project()->sites()));
 
       $helper = $this->getHelper('question');
       $sites_choice_list = new ChoiceQuestion(
@@ -75,57 +67,39 @@ class SiteEditCommand extends Command {
       }
     }
 
-    if (array_key_exists($site_id, $project['sites'])) {
-      $site['name'] = $io->ask('Site name', $project['sites'][$site_id]['name']);
-      $site['url'] = $io->ask('Site URL (minus the protocol and trailing slash', $project['sites'][$site_id]['url']);
-      if ($io->confirm('Does this site require a Solr search?')) {
-        $site['solr'] = $site_id;
-      }
+    if (!array_key_exists($site_id, $this->project()->sites())) {
+     throw new InvalidArgumentException("Site ID '$site_id' does not exist in the project.");
+    }
+   
+    $site_current = $this->project()->sites()[$site_id];
+    $site['name'] = $io->ask('Site name', $site_current['name']);
+    $site['url'] = $io->ask('Site URL (minus the protocol and trailing slash', $site_current['url']);
+    if ($io->confirm('Does this site require a Solr search?')) {
+      $site['solr'] = $site_id;
+    }
 
-      $site['cron_spec'] = '10 * * * *';
-      $site['cron_cmd'] = 'cd web/sites/' . $site_id . ' ; drush core-cron';
+    $site['cron_spec'] = '10 * * * *';
+    $site['cron_cmd'] = 'cd web/sites/' . $site_id . ' ; drush core-cron';
 
-      $site['database'] = $site_id;
+    $site['database'] = $site_id;
 
-      $helper = $this->getHelper('question');
-      $site_status_list = new ChoiceQuestion(
-        'Please select the site status',
-        self::SITE_STATUS,
-        0
-      );
+    $helper = $this->getHelper('question');
+    $site_status_list = new ChoiceQuestion(
+      'Please select the site status',
+      self::SITE_STATUS,
+      0
+    );
 
-      $site_status_list->setErrorMessage('Status %s is invalid.');
+    $site_status_list->setErrorMessage('Status %s is invalid.');
 
-      $site_status = $helper->ask($input, $output, $site_status_list);
-      $site['status'] = $site_status;
+    $site_status = $helper->ask($input, $output, $site_status_list);
+    $site['status'] = $site_status;
 
-      $project['sites'][$site_id] = $site;
+    $this->project()->updateSite($site_id, $site);
 
-      $project_config = Yaml::dump($project, 6);
-
-      try {
-        $this->fs()->dumpFile('/project/project.yml', $project_config);
-        $io->success('Updated project file');
-
-        $io->section('Site details for: ' . $site_id);
-        foreach ($site as $property => $value) {
-          $io->writeln($property . ' : ' . $value);
-        }
-
-        if ($io->confirm('Would you like to rebuild the project?')) {
-          $build_command = $this->getApplication()->find('project:build');
-
-          $return_code = $build_command->run(new ArrayInput([]), $output);
-          return $return_code;
-        }
-
-        $io->success('Successfully added ' . $site_id . ' to the project.');
-        return Command::SUCCESS;
-      }
-      catch (IOExceptionInterface $exception) {
-        $io->error('Unable to update Project file, error: ' . $exception->getMessage());
-        return Command::FAILURE;
-      }
+    if ($io->confirm('Would you like to rebuild the project?')) {
+      $build_command = $this->getApplication()->find('project:build');
+      return $build_command->run(new ArrayInput([]), $output);
     }
     return Command::FAILURE;
   }

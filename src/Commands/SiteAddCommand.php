@@ -8,8 +8,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Command to add a site to a Unity2 project.
@@ -53,9 +51,6 @@ class SiteAddCommand extends Command {
       }
     }
 
-    // Unity2 Project file.
-    $project = $this->fs()->readFile('/project/project.yml');
-
     // @todo Check if a site with that ID exists.
     $site['name'] = $io->ask('Site name');
     $site['url'] = $io->ask('Site URL (minus the protocol and trailing slash');
@@ -81,33 +76,14 @@ class SiteAddCommand extends Command {
     $site_status = $helper->ask($input, $output, $site_status_list);
     $site['status'] = $site_status;
 
-    $project['sites'][$site_id] = $site;
+    $this->project()->addSite($site_id, $site);
 
-    $project_config = Yaml::dump($project, 6);
-
-    try {
-      $this->fs()->dumpFile('/project/project.yml', $project_config);
-      $io->success('Updated project file');
-
-      $io->section('Site details for: ' . $site_id);
-      foreach ($site as $property => $value) {
-        $io->writeln($property . ' : ' . $value);
-      }
-
-      if ($io->confirm('Would you like to rebuild the project?')) {
-        $build_command = $this->getApplication()->find('project:build');
-
-        $return_code = $build_command->run(new ArrayInput([]), $output);
-        return $return_code;
-      }
-
-      $io->success('Successfully added ' . $site_id . ' to the project.');
-      return Command::SUCCESS;
+    if ($io->confirm('Would you like to rebuild the project?')) {
+      $build_command = $this->getApplication()->find('project:build');
+      return $build_command->run(new ArrayInput([]), $output);
     }
-    catch (IOExceptionInterface $exception) {
-      $io->error('Unable to update Project file, error: ' . $exception->getMessage());
-      return Command::FAILURE;
-    }
+
+    return Command::SUCCESS;
   }
 
 }
