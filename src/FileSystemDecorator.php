@@ -132,6 +132,10 @@ class FileSystemDecorator {
       $contents = $this->formatIniData($contents);
     }
 
+    if (str_ends_with($file_path, '.yml') || str_ends_with($file_path, '.yaml')) {
+      $contents = Yaml::dump($contents, 6);
+    }
+
     $this->fs->dumpFile($file_path, $contents);
   }
 
