@@ -3,14 +3,21 @@
 namespace UnityShell\Models;
 
 use Exception;
+use InvalidArgumentException;
 use RomaricDrigon\MetaYaml\Loader\YamlLoader;
 use RomaricDrigon\MetaYaml\MetaYaml;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 use UnityShell\FileSystemDecorator;
 
 class Project {
 
-  protected $project;
+  /**
+   * The project definition.
+   *
+   * @var object|string[]|null
+   */
+  protected array $project;
 
   /**
    * The FileSystemDecorator.
@@ -21,8 +28,11 @@ class Project {
 
 
   public function __construct() {
-
     $this->fs = new FileSystemDecorator(new Filesystem());
+
+    if (!$this->fs()->exists('/project/project.yml')) {
+      throw new FileNotFoundException("Unity project file not found.");
+    }
 
     // Unity2 Project file.
     $project = $this->fs()->readFile('/project/project.yml');
@@ -44,22 +54,26 @@ class Project {
     }
   }
 
-  public function createSite($site_data) {
+  public function addSite(string $site_id, array $site_data) {
     // @todo Validate site data.
-    // @todo warn if no project present.
-    $this->project['sites'][] = $site_data;
+    $this->project['sites'][$site_id] = $site_data;
     $this->save();
   }
 
   public function updateSite($site_id, $site_data) {
     // @todo Validate site data.
-    // @todo warn if no project or site present.
+    if (!array_key_exists($site_id, $this->sites())) {
+      throw new InvalidArgumentException("Site ID '$site_id' does not exist in the project.");
+    }
+
     $this->project['sites'][$site_id] = $site_data;
     $this->save();
   }
 
-  public function deleteSite($site_id) {
-    // @todo warn if no project or site present.
+  public function removeSite($site_id) {
+    if (!array_key_exists($site_id, $this->sites())) {
+      throw new InvalidArgumentException("Site ID '$site_id' does not exist in the project.");
+    }
     unset($this->project['sites'][$site_id]);
     $this->save();
   }
@@ -75,6 +89,16 @@ class Project {
     } catch (Exception $exception) {
       return $exception;
     }
+  }
+
+  /**
+   * Sites for the project.
+   *
+   * @return array
+   *   Array of project sites.
+   */
+  public function sites() {
+    return $this->project['sites'];
   }
 
   /**
