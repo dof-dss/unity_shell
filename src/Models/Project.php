@@ -96,6 +96,26 @@ class Project {
   }
 
   /**
+   * Project name.
+   *
+   * @return string|null
+   *   The project name.
+   */
+  public function name() {
+    return $this->project['project_name'];
+  }
+
+  /**
+   * Project ID.
+   *
+   * @return string|null
+   *   The project ID.
+   */
+  public function id() {
+    return $this->project['project_id'];
+  }
+
+  /**
    * Sites for the project.
    *
    * @return array
@@ -104,7 +124,6 @@ class Project {
   public function sites() {
     return $this->project['sites'];
   }
-
 
   /**
    * Determine if a site exists in the Project.
