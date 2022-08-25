@@ -56,13 +56,17 @@ class Project {
 
   public function addSite(string $site_id, array $site_data) {
     // @todo Validate site data.
+    if ($this->siteExists($site_id)) {
+      throw new InvalidArgumentException("Site ID '$site_id' already exists in the project.");
+    }
+
     $this->project['sites'][$site_id] = $site_data;
     $this->save();
   }
 
   public function updateSite($site_id, $site_data) {
     // @todo Validate site data.
-    if (!array_key_exists($site_id, $this->sites())) {
+    if (!$this->siteExists($site_id)) {
       throw new InvalidArgumentException("Site ID '$site_id' does not exist in the project.");
     }
 
@@ -71,7 +75,7 @@ class Project {
   }
 
   public function removeSite($site_id) {
-    if (!array_key_exists($site_id, $this->sites())) {
+    if (!$this->siteExists($site_id)) {
       throw new InvalidArgumentException("Site ID '$site_id' does not exist in the project.");
     }
     unset($this->project['sites'][$site_id]);
@@ -100,6 +104,22 @@ class Project {
   public function sites() {
     return $this->project['sites'];
   }
+
+
+  /**
+   * Determine if a site exists in the Project.
+   *
+   * @return boolean
+   *   True if site exists, otherwise false.
+   */
+  public function siteExists($site_id) {
+    if (!array_key_exists('sites', $this->project)) {
+      return FALSE;
+    }
+
+    return array_key_exists($site_id, $this->project['sites']);
+  }
+
 
   /**
    * FileSystemDecorator getter.

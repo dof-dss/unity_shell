@@ -51,7 +51,6 @@ class SiteAddCommand extends Command {
       }
     }
 
-    // @todo Check if a site with that ID exists.
     $site['name'] = $io->ask('Site name');
     $site['url'] = $io->ask('Site URL (minus the protocol and trailing slash');
     if ($io->confirm('Does this site require a Solr search?')) {
