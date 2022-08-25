@@ -1,0 +1,16 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+  UnityShell\Services\:
+    resource: 'src/Services/*'
+    exclude: 'src/Services/Hosting'
+  hosting.platformSH:
+    class: 'UnityShell\Services\Hosting\PlatformSH'
+    tags:
+      - { name: unity.hosting }
+  hosting.lando:
+    class: 'UnityShell\Services\Hosting\Lando'
+    tags:
+      - { name: unity.hosting }

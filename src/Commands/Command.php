@@ -75,6 +75,10 @@ abstract class Command extends ConsoleCommand {
     return $this->fs;
   }
 
+  protected function container() {
+    return $this->getApplication()->container();
+  }
+
 
 
 }
