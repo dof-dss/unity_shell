@@ -14,9 +14,9 @@ use Symfony\Component\Yaml\Yaml;
  *
  * See: https://symfony.com/doc/current/components/filesystem.html
  *
- * By default paths passed to these methods will be prefixed with the project
- * root path. If you require an absolute path you should start the path with
- * a double slash (e.g. //app/project/sites).
+ * By default, paths passed to these methods will be prefixed with the current
+ * Unity project root path. If you require an absolute path you should start
+ * the path with a double slash (e.g. //app/project/sites).
  */
 class FileSystemDecorator {
 
