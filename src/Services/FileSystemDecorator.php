@@ -1,6 +1,6 @@
 <?php
 
-namespace UnityShell;
+namespace UnityShell\Services;
 
 use DrupalFinder\DrupalFinder;
 use Symfony\Component\Filesystem\Filesystem;
@@ -40,8 +40,8 @@ class FileSystemDecorator {
    * @param \Symfony\Component\Filesystem\Filesystem $file_system
    *   Filesystem component.
    */
-  public function __construct(Filesystem $file_system) {
-    $this->fs = $file_system;
+  public function __construct() {
+    $this->fs = new Filesystem();
 
     $drupalFinder = new DrupalFinder();
     $drupalFinder->locateRoot(getcwd());

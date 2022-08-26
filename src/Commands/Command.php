@@ -6,8 +6,8 @@ use Symfony\Component\Console\Command\Command as ConsoleCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use UnityShell\FileSystemDecorator;
 use UnityShell\Models\Project;
+use UnityShell\Services\FileSystemDecorator;
 
 /**
  * Base class form building Unity Shell commands.
@@ -37,7 +37,7 @@ abstract class Command extends ConsoleCommand {
   /**
    * The FileSystemDecorator.
    *
-   * @var \UnityShell\FileSystemDecorator
+   * @var \UnityShell\Services\FileSystemDecorator
    */
   private FileSystemDecorator $fs;
 
@@ -50,9 +50,6 @@ abstract class Command extends ConsoleCommand {
     if ($this->getName() !== 'project:create') {
       $this->project = new Project();
     }
-
-    // @todo Create fs as a service and inject.
-    $this->fs = new FileSystemDecorator(new Filesystem());
   }
 
   /**
@@ -68,10 +65,13 @@ abstract class Command extends ConsoleCommand {
   /**
    * FileSystemDecorator getter.
    *
-   * @return \UnityShell\FileSystemDecorator
+   * @return \UnityShell\Services\FileSystemDecorator
    *   The FileSystemDecorator.
    */
   public function fs() {
+    if (empty($this->fs)) {
+      $this->fs = $this->container()->get('unityshell.filesystem');
+    }
     return $this->fs;
   }
 

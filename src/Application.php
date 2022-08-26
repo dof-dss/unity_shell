@@ -55,14 +55,14 @@ class Application extends ParentApplication {
     if (!isset($this->container)) {
       $this->container = new ContainerBuilder();
       $loader = new YamlFileLoader($this->container, new FileLocator());
-      $loader->load($this->shellRoot() . '/../services.yml');
+      $loader->load($this->shellRoot() . '/services.yml');
     }
 
     return $this->container;
   }
 
   public function shellRoot() {
-    return __DIR__;
+    return UNITYSHELL_ROOT;
   }
 
   public function projectRoot() {

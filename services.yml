@@ -3,9 +3,12 @@ services:
     autowire: true
     autoconfigure: true
     public: false
-  UnityShell\Services\:
-    resource: 'src/Services/*'
-    exclude: 'src/Services/Hosting'
+  unityshell.filesystem:
+    class: 'UnityShell\Services\FileSystemDecorator'
+# The hosting providers defined below will generate configuration when
+# project:build is executed.
+# Each provider requires a directory under .hosting in unity_base with
+# the appropriate resources.
   hosting.platformSH:
     class: 'UnityShell\Services\Hosting\PlatformSH'
     tags:
