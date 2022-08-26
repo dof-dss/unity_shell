@@ -4,7 +4,6 @@
     "src"
   ],
   "files": [
-    "constants.php",
     "vendor/autoload.php"
   ],
   "finder": [

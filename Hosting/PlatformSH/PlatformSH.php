@@ -1,6 +1,6 @@
 <?php
 
-namespace UnityShell\Services\Hosting;
+namespace UnityShell\Services\Hosting\PlatformSH;
 
 use UnityShell\HostingInterface;
 

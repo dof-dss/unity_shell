@@ -2,6 +2,7 @@
 
 namespace UnityShell;
 
+use DrupalFinder\DrupalFinder;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionCommand;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application as ParentApplication;
@@ -19,7 +20,9 @@ use UnityShell\Commands\SiteRemoveCommand;
  */
 class Application extends ParentApplication {
 
-  private static ContainerBuilder $container;
+  private $container;
+
+  private $projectRoot;
 
   /**
    * Class constructor.
@@ -28,6 +31,10 @@ class Application extends ParentApplication {
    */
   public function __construct() {
     parent::__construct("Unity Shell", "2.0.0");
+
+    $drupalFinder = new DrupalFinder();
+    $drupalFinder->locateRoot(getcwd());
+    $this->projectRoot = $drupalFinder->getComposerRoot();
 
     $this->addCommands([
       new CompletionCommand(),
@@ -45,13 +52,21 @@ class Application extends ParentApplication {
    */
   public function container()
   {
-    if (!isset(self::$container)) {
-      self::$container = new ContainerBuilder();
-      $loader = new YamlFileLoader(self::$container, new FileLocator());
-      $loader->load(UNITYSH_ROOT . '/services.yml');
+    if (!isset($this->container)) {
+      $this->container = new ContainerBuilder();
+      $loader = new YamlFileLoader($this->container, new FileLocator());
+      $loader->load($this->shellRoot() . '/../services.yml');
     }
 
-    return self::$container;
+    return $this->container;
+  }
+
+  public function shellRoot() {
+    return __DIR__;
+  }
+
+  public function projectRoot() {
+    return $this->projectRoot;
   }
 
 }
