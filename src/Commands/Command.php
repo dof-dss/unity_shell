@@ -79,6 +79,4 @@ abstract class Command extends ConsoleCommand {
     return $this->getApplication()->container();
   }
 
-
-
 }

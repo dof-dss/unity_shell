@@ -46,7 +46,9 @@ class ProjectBuildCommand extends Command {
 
     foreach ($hosting_service_ids as $service_id => $data) {
       $service = $this->container()->get($service_id);
-      $io->writeln($service->build());
+      if ($service->isEnabled()) {
+        $io->writeln($service->build());
+      }
     }
 
 //    $io = new SymfonyStyle($input, $output);

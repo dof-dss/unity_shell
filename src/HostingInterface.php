@@ -1,4 +1,5 @@
 <?php
+
 namespace UnityShell;
 
 interface HostingInterface {
