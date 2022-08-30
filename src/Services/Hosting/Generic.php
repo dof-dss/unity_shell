@@ -44,29 +44,6 @@ class Lando extends Hosting implements HostingInterface {
     $io->writeln("Copying Lando resources to project.");
     $this->fs()->mkdir('/.lando');
     $this->fs()->mirror('/.hosting/Lando/resources/', '/.lando');
-
-    // Check for an .env file and copy example if missing.
-    if (!$this->fs()->exists('/.env')) {
-      // Copy from the sample env file as it may have project specific entries.
-      // If sample.en doesn't exist, copy the basic version.
-      if (!$this->fs()->exists('/.env.sample')) {
-        $this->fs()->copy('/.hosting/Lando/templates/.env.sample', '/.env');
-      }
-
-      $this->fs()->copy('/.env.sample', '/.env');
-      $io->success('Created local .env file');
-    }
-
-    // Read .env file to check for some default Drupal environment settings.
-    $env_data = $this->fs()->readFile('/.env');
-
-    if (empty($env_data['HASH_SALT'])) {
-      if ($io->confirm('Hash Salt was not found in the .env file. Would you like to add one?')) {
-        $env_data['HASH_SALT'] = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode(random_bytes(55)));
-        $this->fs()->dumpFile('/.env', $env_data);
-        $io->success('Creating local site hash within .env file');
-      }
-    }
   }
 
 }
