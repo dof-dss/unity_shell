@@ -110,6 +110,14 @@ class PlatformSH extends Hosting implements HostingInterface {
     // Copy Solr configuration to platform directory.
     $io->writeln('Copying Solr configuration.');
     $this->fs()->mirror('/.hosting/platformsh/resources/solr_config', '/.platform/solr_config');
+
+    // Copy environment file.
+    $io->writeln('Copying environment file.');
+    $this->fs()->copy('/.hosting/platformsh/resources/.environment', '/.environment');
+
+    // Copy Redis installer file.
+    $io->writeln('Copying Redis install script.');
+    $this->fs()->copy('/.hosting/platformsh/resources/install-redis.sh', '/install-redis.sh');
   }
 
 }

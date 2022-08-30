@@ -74,7 +74,7 @@ class Lando extends Hosting implements HostingInterface {
       // Copy from the sample env file as it may have project specific entries.
       // If sample.en doesn't exist, copy the basic version.
       if (!$this->fs()->exists('/.env.sample')) {
-        $this->fs()->copy('/.hosting/Lando/templates/.env.sample', '/.env');
+        $this->fs()->copy('/.hosting/Lando/templates/.env.sample', '/.env.sample');
       }
 
       $this->fs()->copy('/.env.sample', '/.env');
