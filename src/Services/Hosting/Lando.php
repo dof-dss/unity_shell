@@ -45,6 +45,30 @@ class Lando extends Hosting implements HostingInterface {
     $this->fs()->mkdir('/.lando');
     $this->fs()->mirror('/.hosting/Lando/resources/', '/.lando');
 
+    // Copy Lando Drupal services file if one doesn't already exist.
+    if (!$this->fs()->exists('/web/sites/default/services.yml')) {
+      $io->writeln("Copying Lando Drupal services file.");
+      $this->fs()->copy('/.hosting/Lando/templates/drupal.services.yml', '/web/sites/default/services.yml');
+    }
+
+    // Copy Lando Redis config file if one doesn't already exist.
+    if (!$this->fs()->exists('/web/sites/default/redis.services.yml')) {
+      $io->writeln("Copying Lando Redis config file.");
+      $this->fs()->copy('/.hosting/Lando/templates/redis.services.yml', '/web/sites/default/redis.services.yml');
+    }
+
+    // Create public files directory if one doesn't already exist.
+    if (!$this->fs()->exists('/web/files')) {
+      $io->writeln("Creating Drupal public files directory.");
+      $this->fs()->mkdir('/web/files');
+    }
+
+    // Create private files directory if one doesn't already exist.
+    if (!$this->fs()->exists('/.lando/private')) {
+      $io->writeln("Creating Drupal private files directory.");
+      $this->fs()->mkdir('/.lando/private');
+    }
+
     // Check for an .env file and copy example if missing.
     if (!$this->fs()->exists('/.env')) {
       // Copy from the sample env file as it may have project specific entries.
