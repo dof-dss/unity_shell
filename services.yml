@@ -17,3 +17,7 @@ services:
     class: 'UnityShell\Services\Hosting\Lando'
     tags:
       - { name: unity.hosting }
+  hosting.generic:
+    class: 'UnityShell\Services\Hosting\Generic'
+    tags:
+      - { name: unity.hosting }
