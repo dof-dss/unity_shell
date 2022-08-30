@@ -8,7 +8,8 @@ use UnityShell\Utils;
 
 class Lando extends Hosting implements HostingInterface {
 
-  public function build() {
+  public function build($io) {
+    parent::build($io);
     $data = [];
 
     $data['name'] = Utils::createApplicationId($this->project()->name());
@@ -32,12 +33,15 @@ class Lando extends Hosting implements HostingInterface {
     }
 
     // Copy the base Unity configuration for Lando.
+    $io->writeln("Creating Lando base configuration file.");
     $this->fs()->copy('/.hosting/Lando/templates/.lando.base.yml', '/.lando.base.yml');
 
     // Create project specific Lando file.
+    $io->writeln("Creating Lando project configuration file.");
     $this->fs()->dumpFile('/.lando.yml', $data);
 
     // Copy Lando resources to the project.
+    $io->writeln("Copying Lando resources to project.");
     $this->fs()->mkdir('/.lando');
     $this->fs()->mirror('/.hosting/Lando/resources/', '/.lando');
   }

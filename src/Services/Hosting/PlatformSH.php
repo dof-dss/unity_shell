@@ -9,7 +9,8 @@ use UnityShell\Utils;
 
 class PlatformSH extends Hosting implements HostingInterface {
 
-  public function build() {
+  public function build($io) {
+    parent::build($io);
     $routes = [];
     // Flag to determine if we need to include Solr configuration
     // in the Platform services file.
@@ -101,11 +102,13 @@ class PlatformSH extends Hosting implements HostingInterface {
     }
 
     // Write Platform configuration files.
+    $io->writeln('Writing platform configuration, services and routes.');
     $this->fs()->dumpFile('/.platform.app.yaml', $platform);
     $this->fs()->dumpFile('/.platform/services.yaml', $services);
     $this->fs()->dumpFile('/.platform/routes.yaml', $routes);
 
     // Copy Solr configuration to platform directory.
+    $io->writeln('Copying Solr configuration.');
     $this->fs()->mirror('/.hosting/platformsh/resources/solr_config', '/.platform/solr_config');
   }
 

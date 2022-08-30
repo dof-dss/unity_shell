@@ -3,6 +3,7 @@
 namespace UnityShell;
 
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use UnityShell\Models\Project;
@@ -17,6 +18,8 @@ abstract class Hosting {
   protected $provider;
 
   protected $project;
+
+  protected $io;
 
   /**
    * The FileSystemDecorator.
@@ -38,6 +41,14 @@ abstract class Hosting {
     $this->isEnabled = $this->fs()->exists('/.hosting/' . $this->provider);
   }
 
+  public function build($io) {
+    $io->title($this->name());
+  }
+
+  public function name() {
+    return (new \ReflectionClass($this))->getShortName();
+  }
+
   protected function container() {
     return $this->getApplication()->container();
   }
@@ -52,6 +63,10 @@ abstract class Hosting {
 
   protected function project() {
     return $this->project;
+  }
+
+  protected function io() {
+    return $this->io;
   }
 
 }
