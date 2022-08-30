@@ -7,6 +7,7 @@ use UnityShell\HostingInterface;
 use UnityShell\Utils;
 
 class Lando extends Hosting implements HostingInterface {
+
   public function build() {
     $data = [];
 
@@ -40,4 +41,5 @@ class Lando extends Hosting implements HostingInterface {
     $this->fs()->mkdir('/.lando');
     $this->fs()->mirror('/.hosting/Lando/resources/', '/.lando');
   }
+
 }
