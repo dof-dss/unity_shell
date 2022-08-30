@@ -42,7 +42,7 @@ abstract class Hosting {
     return $this->getApplication()->container();
   }
 
-  protected function isEnabled() {
+  public function isEnabled() {
     return $this->isEnabled;
   }
 
@@ -53,6 +53,5 @@ abstract class Hosting {
   protected function project() {
     return $this->project;
   }
-
 
 }
