@@ -2,7 +2,6 @@
 
 namespace UnityShell;
 
-use DrupalFinder\DrupalFinder;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionCommand;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application as ParentApplication;
@@ -22,8 +21,6 @@ class Application extends ParentApplication {
 
   private $container;
 
-  private $projectRoot;
-
   /**
    * Class constructor.
    *
@@ -31,10 +28,6 @@ class Application extends ParentApplication {
    */
   public function __construct() {
     parent::__construct("Unity Shell", "2.0.0");
-
-    $drupalFinder = new DrupalFinder();
-    $drupalFinder->locateRoot(getcwd());
-    $this->projectRoot = $drupalFinder->getComposerRoot();
 
     $this->addCommands([
       new CompletionCommand(),
@@ -55,18 +48,10 @@ class Application extends ParentApplication {
     if (!isset($this->container)) {
       $this->container = new ContainerBuilder();
       $loader = new YamlFileLoader($this->container, new FileLocator());
-      $loader->load($this->shellRoot() . '/services.yml');
+      $loader->load(Utils::shellRoot() . '/services.yml');
     }
 
     return $this->container;
-  }
-
-  public function shellRoot() {
-    return UNITYSHELL_ROOT;
-  }
-
-  public function projectRoot() {
-    return $this->projectRoot;
   }
 
 }

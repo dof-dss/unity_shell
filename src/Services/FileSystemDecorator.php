@@ -5,6 +5,7 @@ namespace UnityShell\Services;
 use DrupalFinder\DrupalFinder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
+use UnityShell\Utils;
 
 /**
  * Decorator for the symfony FileSystem component.
@@ -45,7 +46,7 @@ class FileSystemDecorator {
 
     $drupalFinder = new DrupalFinder();
     $drupalFinder->locateRoot(getcwd());
-    $this->projectRoot = $drupalFinder->getComposerRoot();
+    $this->projectRoot = Utils::projectRoot();
   }
 
   /**
