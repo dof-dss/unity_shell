@@ -9,6 +9,7 @@ use RomaricDrigon\MetaYaml\MetaYaml;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 use UnityShell\Services\FileSystemDecorator;
+use UnityShell\Utils;
 
 class Project {
 
@@ -85,7 +86,7 @@ class Project {
   protected function validate($project_data) {
     // Validate Project file.
     $yaml_loader = new YamlLoader();
-    $schema_data = $yaml_loader->loadFromFile(UNITYSHELL_ROOT . '/resources/schemas/unity_project.yml');
+    $schema_data = $yaml_loader->loadFromFile(Utils::shellRoot() . '/resources/schemas/unity_project.yml');
     $schema = new MetaYaml($schema_data);
 
     try {

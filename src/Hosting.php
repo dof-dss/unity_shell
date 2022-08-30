@@ -31,14 +31,12 @@ abstract class Hosting {
   public function __construct() {
     $this->container = new ContainerBuilder();
     $loader = new YamlFileLoader($this->container, new FileLocator());
-    $loader->load(UNITYSHELL_ROOT . '/services.yml');
+    $loader->load(Utils::shellRoot() . '/services.yml');
 
     $this->fs = $this->container->get('unityshell.filesystem');
-    $this->provider = (new \ReflectionClass($this))->getShortName();
-
     $this->project = new Project();
 
-    $this->isEnabled = $this->fs()->exists('/.hosting/' . $this->provider);
+    $this->isEnabled = $this->fs()->exists('/.hosting/' . $this->name());
   }
 
   public function build($io) {
