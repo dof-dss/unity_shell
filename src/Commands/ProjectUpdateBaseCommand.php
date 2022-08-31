@@ -49,11 +49,35 @@ class ProjectUpdateBaseCommand extends Command {
     $process->run();
 
     if (!$process->isSuccessful()) {
-      throw new ProcessFailedException($process);
+      if (str_starts_with($process->getErrorOutput(), "fatal: 'upstream' does not appear to be a git repository")) {
+        $commands = [];
+        $commands[] = "git remote add upstream https://github.com/dof-dss/unity_base.git";
+        $commands[] = "git remote set-url --push upstream no-push";
+
+        $process = new Process(implode(' && ', $commands));
+        $process->setWorkingDirectory(Utils::projectRoot());
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+          $io->error("Unable to add upstream remote. Check your permissions and manually add the upstream remote by running:");
+          $io->listing([
+            'git remote add upstream https://github.com/dof-dss/unity_base.git',
+            'git remote set-url --push upstream no-push',
+          ]);
+          return Command::FAILURE;
+        }
+
+        $io->success("Successfully added upstream remote to the repository.");
+        $this->execute($input, $output);
+      } else {
+        throw new ProcessFailedException($process);
+      }
+    } else {
+      $io->success('Update from Unity Base successful.');
+      return Command::SUCCESS;
     }
 
-    $io->success('Update from Unity Base successful.');
-    return Command::SUCCESS;
+    return Command::FAILURE;
   }
 
 }
