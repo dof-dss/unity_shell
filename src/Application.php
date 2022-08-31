@@ -20,6 +20,11 @@ use UnityShell\Commands\SiteRemoveCommand;
  */
 class Application extends ParentApplication {
 
+  /**
+   * The Dependency Injection container.
+   *
+   * @var \Symfony\Component\DependencyInjection\ContainerBuilder
+   */
   private $container;
 
   /**
@@ -43,10 +48,12 @@ class Application extends ParentApplication {
   }
 
   /**
-   * @return ContainerBuilder
+   * Returns the DI container.
+   *
+   * @return \Symfony\Component\DependencyInjection\ContainerBuilder
+   *   Dependency Injection container.
    */
-  public function container()
-  {
+  public function container() {
     if (!isset($this->container)) {
       $this->container = new ContainerBuilder();
       $loader = new YamlFileLoader($this->container, new FileLocator());

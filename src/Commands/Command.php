@@ -5,7 +5,6 @@ namespace UnityShell\Commands;
 use Symfony\Component\Console\Command\Command as ConsoleCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use UnityShell\Models\Project;
 use UnityShell\Services\FileSystemDecorator;
 
@@ -75,6 +74,12 @@ abstract class Command extends ConsoleCommand {
     return $this->fs;
   }
 
+  /**
+   * Returns the DI container.
+   *
+   * @return \Symfony\Component\DependencyInjection\ContainerBuilder
+   *   Dependency Injection container.
+   */
   protected function container() {
     return $this->getApplication()->container();
   }

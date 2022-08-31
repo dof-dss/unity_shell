@@ -2,7 +2,6 @@
 
 namespace UnityShell\Commands;
 
-use InvalidArgumentException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -45,7 +44,6 @@ class SiteEditCommand extends Command {
     $site_id = $input->getArgument('siteid');
 
     // @todo Warn if we have no site entries.
-
     // Provide a list of sites from the project file for the user to select.
     if (empty($site_id)) {
       $site_options = ['Cancel'];
@@ -68,9 +66,9 @@ class SiteEditCommand extends Command {
     }
 
     if (!array_key_exists($site_id, $this->project()->sites())) {
-     throw new InvalidArgumentException("Site ID '$site_id' does not exist in the project.");
+      throw new \InvalidArgumentException("Site ID '$site_id' does not exist in the project.");
     }
-   
+
     $site_current = $this->project()->sites()[$site_id];
     $site['name'] = $io->ask('Site name', $site_current['name']);
     $site['url'] = $io->ask('Site URL (minus the protocol and trailing slash', $site_current['url']);

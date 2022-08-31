@@ -6,8 +6,14 @@ use UnityShell\Hosting;
 use UnityShell\HostingInterface;
 use UnityShell\Utils;
 
+/**
+ * Provides hosting setup and configuration for Lando.
+ */
 class Lando extends Hosting implements HostingInterface {
 
+  /**
+   * {@inheritdoc}
+   */
   public function build($io) {
     parent::build($io);
     $data = [];

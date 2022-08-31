@@ -7,7 +7,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
-use UnityShell\Services\MessageGenerator;
 use UnityShell\Utils;
 
 /**
@@ -69,10 +68,12 @@ class ProjectUpdateBaseCommand extends Command {
 
         $io->success("Successfully added upstream remote to the repository.");
         $this->execute($input, $output);
-      } else {
+      }
+      else {
         throw new ProcessFailedException($process);
       }
-    } else {
+    }
+    else {
       $io->success('Update from Unity Base successful.');
       return Command::SUCCESS;
     }

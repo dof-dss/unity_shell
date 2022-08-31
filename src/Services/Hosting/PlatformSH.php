@@ -7,8 +7,14 @@ use UnityShell\Hosting;
 use UnityShell\HostingInterface;
 use UnityShell\Utils;
 
+/**
+ * Provides hosting setup and configuration for PlatformSH.
+ */
 class PlatformSH extends Hosting implements HostingInterface {
 
+  /**
+   * {@inheritdoc}
+   */
   public function build($io) {
     parent::build($io);
     $routes = [];

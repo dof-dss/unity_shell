@@ -37,9 +37,6 @@ class FileSystemDecorator {
 
   /**
    * FileSystemDecorator constructor.
-   *
-   * @param \Symfony\Component\Filesystem\Filesystem $file_system
-   *   Filesystem component.
    */
   public function __construct() {
     $this->fs = new Filesystem();

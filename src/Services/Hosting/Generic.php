@@ -6,8 +6,14 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use UnityShell\Hosting;
 use UnityShell\HostingInterface;
 
+/**
+ * Provides generic hosting setup and configuration.
+ */
 class Generic extends Hosting implements HostingInterface {
 
+  /**
+   * {@inheritdoc}
+   */
   public function build($io) {
     parent::build($io);
 

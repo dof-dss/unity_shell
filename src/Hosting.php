@@ -2,23 +2,44 @@
 
 namespace UnityShell;
 
+use _HumbugBox61bfe547a037\Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use UnityShell\Models\Project;
 use UnityShell\Services\FileSystemDecorator;
 
+/**
+ * Base class for hosting services.
+ */
 abstract class Hosting {
 
+  /**
+   * The service status.
+   *
+   * @var bool
+   */
   protected bool $isEnabled = FALSE;
 
+  /**
+   * The Dependency Injection container.
+   *
+   * @var \Symfony\Component\DependencyInjection\ContainerBuilder
+   */
   protected $container;
 
-  protected $provider;
-
+  /**
+   * The project definition.
+   *
+   * @var \UnityShell\Models\Project
+   */
   protected $project;
 
+  /**
+   * Symfony Style instance.
+   *
+   * @var \Symfony\Component\Console\Style\SymfonyStyle
+   */
   protected $io;
 
   /**
@@ -28,6 +49,11 @@ abstract class Hosting {
    */
   private FileSystemDecorator $fs;
 
+  /**
+   * Hosting constructor.
+   *
+   * @throws \Exception
+   */
   public function __construct() {
     $this->container = new ContainerBuilder();
     $loader = new YamlFileLoader($this->container, new FileLocator());
@@ -39,30 +65,72 @@ abstract class Hosting {
     $this->isEnabled = $this->fs()->exists('/.hosting/' . $this->name());
   }
 
-  public function build($io) {
+  /**
+   * Generates the hosting setup and configuration.
+   *
+   * @param \Symfony\Component\Console\Style\SymfonyStyle $io
+   *   Symfony style instance.
+   */
+  public function build(SymfonyStyle $io) {
     $io->title($this->name());
   }
 
+  /**
+   * The name of the hosting service.
+   *
+   * @return string
+   *   Hosting service name.
+   */
   public function name() {
     return (new \ReflectionClass($this))->getShortName();
   }
 
+  /**
+   * Returns the DI container.
+   *
+   * @return \Symfony\Component\DependencyInjection\ContainerBuilder
+   *   Dependency Injection container.
+   */
   protected function container() {
     return $this->getApplication()->container();
   }
 
+  /**
+   * Indicates if the hosting service is enabled.
+   *
+   * @return bool
+   *   True for enabled, otherwise false.
+   */
   public function isEnabled() {
     return $this->isEnabled;
   }
 
+  /**
+   * The Filesystem.
+   *
+   * @return mixed|object|null
+   *   The Filesystem decorator instance.
+   */
   protected function fs() {
     return $this->fs;
   }
 
+  /**
+   * The project definition.
+   *
+   * @return \UnityShell\Models\Project
+   *   Current project definition.
+   */
   protected function project() {
     return $this->project;
   }
 
+  /**
+   * Symfony Style.
+   *
+   * @return \Symfony\Component\Console\Style\SymfonyStyle
+   *   The Symfony Style instance.
+   */
   protected function io() {
     return $this->io;
   }

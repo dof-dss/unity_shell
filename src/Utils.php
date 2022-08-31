@@ -4,6 +4,9 @@ namespace UnityShell;
 
 use DrupalFinder\DrupalFinder;
 
+/**
+ * Unity Shell Utilities.
+ */
 class Utils {
 
   /**
@@ -19,10 +22,22 @@ class Utils {
     return strtolower(str_replace(' ', '_', $name));
   }
 
+  /**
+   * System path to the Unity Shell application.
+   *
+   * @return string
+   *   System path for Unity Shell.
+   */
   public static function shellRoot() {
     return UNITYSHELL_ROOT;
   }
 
+  /**
+   * System path to the Unity project.
+   *
+   * @return bool|string
+   *   System path or False for not found.
+   */
   public static function projectRoot() {
     $drupalFinder = new DrupalFinder();
     $drupalFinder->locateRoot(getcwd());
