@@ -7,6 +7,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application as ParentApplication;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use UnityShell\Commands\ProjectUpdateBaseCommand;
 use UnityShell\Commands\ProjectBuildCommand;
 use UnityShell\Commands\ProjectCreateCommand;
 use UnityShell\Commands\ProjectInfoCommand;
@@ -31,6 +32,7 @@ class Application extends ParentApplication {
 
     $this->addCommands([
       new CompletionCommand(),
+      new ProjectUpdateBaseCommand(),
       new ProjectBuildCommand(),
       new ProjectCreateCommand(),
       new ProjectInfoCommand(),

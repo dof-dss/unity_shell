@@ -125,7 +125,7 @@ class FileSystemDecorator {
    *
    * @param string $file_path
    *   System path to write to.
-   * @param string $contents
+   * @param array|string $contents
    *   File contents to write.
    */
   protected function dumpFile($file_path, $contents) {

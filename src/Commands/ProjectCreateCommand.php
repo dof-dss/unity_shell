@@ -73,10 +73,8 @@ class ProjectCreateCommand extends Command {
     $project['project_name'] = $project_name;
     $project['project_id'] = $project_id;
 
-    $project_config = Yaml::dump($project, 6);
-
     try {
-      $this->fs()->dumpFile('/project/project.yml', $project_config);
+      $this->fs()->dumpFile('/project/project.yml', $project);
       $io->success('Created project file');
 
       if ($io->confirm('Would you like to add a site to the project?')) {
