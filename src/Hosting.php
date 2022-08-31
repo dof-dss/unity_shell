@@ -2,7 +2,7 @@
 
 namespace UnityShell;
 
-use _HumbugBox61bfe547a037\Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;

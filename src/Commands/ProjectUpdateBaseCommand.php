@@ -2,6 +2,7 @@
 
 namespace UnityShell\Commands;
 
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -75,6 +76,12 @@ class ProjectUpdateBaseCommand extends Command {
     }
     else {
       $io->success('Update from Unity Base successful.');
+
+      if ($io->confirm('Would you like to rebuild the project?')) {
+        $build_command = $this->getApplication()->find('project:build');
+        return $build_command->run(new ArrayInput([]), $output);
+      }
+
       return Command::SUCCESS;
     }
 
