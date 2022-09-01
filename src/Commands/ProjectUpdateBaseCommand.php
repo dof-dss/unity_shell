@@ -11,7 +11,7 @@ use Symfony\Component\Process\Process;
 use UnityShell\Utils;
 
 /**
- * Command pull in updates from Unity_base.
+ * Command to update the project with changes from Unity_base.
  */
 class ProjectUpdateBaseCommand extends Command {
 
@@ -49,6 +49,7 @@ class ProjectUpdateBaseCommand extends Command {
     $process->run();
 
     if (!$process->isSuccessful()) {
+      // If the error warns that upstream doesn't exist, try adding it.
       if (str_starts_with($process->getErrorOutput(), "fatal: 'upstream' does not appear to be a git repository")) {
         $commands = [];
         $commands[] = "git remote add upstream https://github.com/dof-dss/unity_base.git";

@@ -98,7 +98,8 @@ class Lando extends Hosting implements HostingInterface {
       }
     }
 
-    if (!$this->fs()->exists('/vendorss')) {
+    // Inform the user if composer install is needed.
+    if (!$this->fs()->exists('/vendor')) {
       $this->addInstructions("Run 'lando composer install'");
     }
 
