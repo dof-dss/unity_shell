@@ -50,6 +50,13 @@ abstract class Hosting {
   private FileSystemDecorator $fs;
 
   /**
+   * The service instructions.
+   *
+   * @var array
+   */
+  protected array $instructions = [];
+
+  /**
    * Hosting constructor.
    *
    * @throws \Exception
@@ -72,7 +79,21 @@ abstract class Hosting {
    *   Symfony style instance.
    */
   public function build(SymfonyStyle $io) {
-    $io->title($this->name());
+    $io->section($this->name());
+  }
+
+  /**
+   * Returns service instructions.
+   */
+  public function instructions() {
+    return $this->instructions;
+  }
+
+  /**
+   * Add to the service instructions.
+   */
+  public function addInstructions(string $instruction) {
+    $this->instructions[] = $instruction;
   }
 
   /**
@@ -134,5 +155,9 @@ abstract class Hosting {
   protected function io() {
     return $this->io;
   }
+
+  // @todo
+  // provide an instructions method to hosting that is added to by each service
+  // provide instructions on how to use lando, link to platform dump db including proect id
 
 }

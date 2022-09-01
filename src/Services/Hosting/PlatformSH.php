@@ -124,6 +124,9 @@ class PlatformSH extends Hosting implements HostingInterface {
     // Copy Redis installer file.
     $io->writeln('Copying Redis install script.');
     $this->fs()->copy('/.hosting/platformsh/resources/install-redis.sh', '/install-redis.sh');
+
+    $this->addInstructions('Download PlatformSH databases: platform db:dump -p ' . $this->project()->id());
+    $this->addInstructions('Download PlatformSH files: platform mount:download -p ' . $this->project()->id());
   }
 
 }

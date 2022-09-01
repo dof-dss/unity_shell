@@ -12,6 +12,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class ProjectBuildCommand extends Command {
 
   /**
+   * Hosting service instructions.
+   *
+   * @var array
+   */
+  protected $instructions = [];
+
+  /**
    * Defines configuration options for this command.
    */
   protected function configure(): void {
@@ -43,12 +50,20 @@ class ProjectBuildCommand extends Command {
     // Retrieve each hosting service and if enabled, execute its build.
     $hosting_service_ids = $this->container()->findTaggedServiceIds('unity.hosting');
 
-    foreach ($hosting_service_ids as $service_id => $data) {
-      $service = $this->container()->get($service_id);
-      if ($service->isEnabled()) {
-        $service->build($io);
+    if (!empty($hosting_service_ids)) {
+      $io->title('## Hosting setup ##');
+
+      foreach ($hosting_service_ids as $service_id => $data) {
+        $service = $this->container()->get($service_id);
+        if ($service->isEnabled()) {
+          $service->build($io);
+          $this->instructions = array_merge($this->instructions, $service->instructions());
+        }
       }
     }
+
+    $io->title('## Instructions ##');
+    $io->listing($this->instructions);
 
     return Command::SUCCESS;
   }

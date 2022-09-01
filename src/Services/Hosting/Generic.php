@@ -57,6 +57,7 @@ class Generic extends Hosting implements HostingInterface {
       $io->text('Creating Drupal services file from defaults.');
       $this->fs()->copy('/.hosting/Generic/resources/default.services.yml', '/web/sites/services.yml');
     }
+
   }
 
 }

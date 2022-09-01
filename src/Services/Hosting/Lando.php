@@ -97,6 +97,13 @@ class Lando extends Hosting implements HostingInterface {
         $io->success('Creating local site hash within .env file');
       }
     }
+
+    if (!$this->fs()->exists('/vendorss')) {
+      $this->addInstructions("Run 'lando composer install'");
+    }
+
+    $this->addInstructions("Import platform databases using 'lando db-import <database name> <dump file>'");
+
   }
 
 }
