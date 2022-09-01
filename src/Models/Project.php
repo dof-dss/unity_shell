@@ -38,7 +38,7 @@ class Project {
       throw new FileNotFoundException("Unity project file not found.");
     }
 
-    // Unity2 Project file.
+    // Load the Unity Project file.
     $project = $this->fs()->readFile('/project/project.yml');
 
     try {

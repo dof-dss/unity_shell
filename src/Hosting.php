@@ -69,6 +69,7 @@ abstract class Hosting {
     $this->fs = $this->container->get('unityshell.filesystem');
     $this->project = new Project();
 
+    // Enable if the hosting service has the required directory in Unity Base.
     $this->isEnabled = $this->fs()->exists('/.hosting/' . $this->name());
   }
 
@@ -155,9 +156,5 @@ abstract class Hosting {
   protected function io() {
     return $this->io;
   }
-
-  // @todo
-  // provide an instructions method to hosting that is added to by each service
-  // provide instructions on how to use lando, link to platform dump db including proect id
 
 }
