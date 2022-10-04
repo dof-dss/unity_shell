@@ -45,6 +45,7 @@ class ProjectBuildCommand extends UnityShellCommand {
   protected function execute(InputInterface $input, OutputInterface $output): int {
     $io = new SymfonyStyle($input, $output);
     $solr_required = FALSE;
+    $has_default_site = FALSE;
 
     // @todo Spin most of this code out into separate functions or services
     // and remove all these todo's.
@@ -141,10 +142,9 @@ class ProjectBuildCommand extends UnityShellCommand {
         $platform['crons'][$site_id]['spec'] = $site['cron_spec'];
         $platform['crons'][$site_id]['cmd'] = $site['cron_cmd'];
       }
-      var_dump($site);
-
 
       if ($site['default'] === true) {
+        $has_default_site = TRUE;
         // Create Platform SH route for the default site.
         $platform_routes['https://www.' . $site['url'] . '.{default}/'] = [
           'type' => 'upstream',
@@ -311,6 +311,10 @@ class ProjectBuildCommand extends UnityShellCommand {
     $io->section("Finished!");
     $io->text("To build your local unity sites:");
     $io->listing($post_build_instructions);
+
+    if (!$has_default_site) {
+      $io->warning("This project does not have a default site enabled. Edit project.yml to set 1 site as the default.");
+    }
 
     return Command::SUCCESS;
   }
