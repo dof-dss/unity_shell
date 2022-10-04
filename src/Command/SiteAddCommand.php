@@ -86,6 +86,9 @@ class SiteAddCommand extends UnityShellCommand {
     $site_status = $helper->ask($input, $output, $site_status_list);
     $site['status'] = $site_status;
 
+    // By default, all sites will set to not be the PSH default entry.
+    $site['default'] = FALSE;
+
     $project['sites'][$site_id] = $site;
 
     $project_config = Yaml::dump($project, 6);
@@ -96,7 +99,11 @@ class SiteAddCommand extends UnityShellCommand {
 
       $io->section('Site details for: ' . $site_id);
       foreach ($site as $property => $value) {
-        $io->writeln($property . ' : ' . $value);
+        if (is_bool($value)) {
+          $io->writeln($property . ' : ' . ($value ? 'Yes' : 'No'));
+        } else {
+          $io->writeln($property . ' : ' . $value);
+        }
       }
 
       if ($io->confirm('Would you like to rebuild the project?')) {

@@ -45,6 +45,7 @@ class ProjectBuildCommand extends UnityShellCommand {
   protected function execute(InputInterface $input, OutputInterface $output): int {
     $io = new SymfonyStyle($input, $output);
     $solr_required = FALSE;
+    $default_site_entries = 0;
 
     // @todo Spin most of this code out into separate functions or services
     // and remove all these todo's.
@@ -142,7 +143,23 @@ class ProjectBuildCommand extends UnityShellCommand {
         $platform['crons'][$site_id]['cmd'] = $site['cron_cmd'];
       }
 
-      if ($site['status'] !== 'production') {
+      if ($site['default'] === true) {
+        $default_site_entries++;
+        // Create Platform SH route for the default site.
+        $platform_routes['https://www.' . $site['url'] . '.{default}/'] = [
+          'type' => 'upstream',
+          'upstream' => $platform['name'] . ':http',
+          'cache' => [
+            'enabled' => 'false',
+          ],
+        ];
+
+        $platform_routes['https://' . $site['url'] . '.{default}/'] = [
+          'type' => 'redirect',
+          'to' => 'https://www.' . $site['url'] . '.{default}/',
+        ];
+      }
+      elseif ($site['status'] !== 'production' && $site['default'] !== true) {
         // Create Platform SH route.
         $platform_routes['https://www.' . $site['url'] . '/'] = [
           'type' => 'upstream',
@@ -294,6 +311,13 @@ class ProjectBuildCommand extends UnityShellCommand {
     $io->section("Finished!");
     $io->text("To build your local unity sites:");
     $io->listing($post_build_instructions);
+
+    if ($default_site_entries === 0) {
+      $io->warning("This project does not have a default site enabled. Edit project.yml to set 1 site as the default and re-run this command.");
+    }
+    elseif ($default_site_entries > 1) {
+      $io->warning("This project has multiple sites set as the default site. Edit project.yml to set 1 site as the default and re-run this command.");
+    }
 
     return Command::SUCCESS;
   }
