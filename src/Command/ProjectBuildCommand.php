@@ -141,8 +141,25 @@ class ProjectBuildCommand extends UnityShellCommand {
         $platform['crons'][$site_id]['spec'] = $site['cron_spec'];
         $platform['crons'][$site_id]['cmd'] = $site['cron_cmd'];
       }
+      var_dump($site);
 
-      if ($site['status'] !== 'production') {
+
+      if ($site['default'] === true) {
+        // Create Platform SH route for the default site.
+        $platform_routes['https://www.' . $site['url'] . '.{default}/'] = [
+          'type' => 'upstream',
+          'upstream' => $platform['name'] . ':http',
+          'cache' => [
+            'enabled' => 'false',
+          ],
+        ];
+
+        $platform_routes['https://' . $site['url'] . '.{default}/'] = [
+          'type' => 'redirect',
+          'to' => 'https://www.' . $site['url'] . '.{default}/',
+        ];
+      }
+      elseif ($site['status'] !== 'production' && $site['default'] !== true) {
         // Create Platform SH route.
         $platform_routes['https://www.' . $site['url'] . '/'] = [
           'type' => 'upstream',
